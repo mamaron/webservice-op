@@ -40,6 +40,7 @@ define('MSG03','最大文字数を超えています');
 define('MSG04','半角英数字のみ使用できます');
 define('MSG05','6文字以上でお願いします');
 define('MSG06','パスワードとパスワード(再入力)が一致しません');
+define('MSG07','不具合が発生いたしました。しばらく経ってから再度お試しください。');
 
 //エラー用の変数
 $err_flg = array();
@@ -57,6 +58,12 @@ function validEmail($email,$key){
   if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
     $err_flg[$key] = MSG02;
   }
+}
+//emailの重複
+function validMailDup($email,$key){
+  global $err_flg;
+  //例外処理
+
 }
 //半角英数字＋記号
 function validPass($str,$key){
@@ -86,6 +93,25 @@ function validMatch($str1,$str2,$key){
     $err_flg[$key] = MSG06;
   }
 }
+//DB接続
+function dbConnect(){
+  $dsn = 'mysql:dbname=inu_station_db;host=localhost;charset=utf8mb4';
+  $user = 'root';
+  $password = 'root';
+  $options = array(
+            //エラーモード：例外を投げる
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            //デフォルトのフェッチモードを連想配列形式にする
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            //バッファクエリを使用してDBの負担を減らす
+            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
+  );
+  //php.iniでも変えたが、タイムゾーンをアジア/東京に帰る。
+  date_default_timezone_set('Asia/Tokyo');
+  return $dbh = new PDO($dsn,$user,$password,$options);
+}
+
+
 
 //===================================================
 debug('「「「「「「「「「「「「「「「「「「「「「「「「「');
@@ -107,10 +133,13 @@ if(!empty($_POST)){
     $pass_re = $_POST['pass_re'];
     debug('passの中身1:'.$pass);
 
-    //emailの形式、最大文字数、
+    //emailの形式、最大文字数、emailの重複
     validEmail($email,'email');
     if(empty($err_flg)){
       validMaxLen($email,'email');
+    }
+    if(empty($err_flg)){
+      validMailDup($email,'email');
     }
     //passの最小文字数、半角英数字＋きごう、最大文字数
     validPass($pass,'pass');
@@ -127,7 +156,36 @@ if(!empty($_POST)){
       debug('バリデーションOK');
       //例外処理
       try{
+        debug('DB接続します');
         //DB接続
+        $dbh = dbConnect();
+        
+        //クエリ作成
+        $stmt = $dbh->prepare('INSERT INTO users(email, pass, create_date) VALUES(:email, :pass, :c_date)');
+        //クエリ実行
+        $stmt->execute(array(
+          ':email' => $email,
+          ':pass' => password_hash($pass,PASSWORD_DEFAULT),
+          ':c_date' => date('Y-m-d H:i:s')
+        ));
+        if($stmt){
+          debug('クエリ成功');
+          session_start();
+          //ユーザーID
+          $_SESSION['user_id'] = $dbh->lastInsertId();
+          //ログイン日時、ログインリミット
+          $_SESSION['login_date'] = time();
+          $_SESSION['login_limit'] = 60*60;
+          debug('マイページに遷移します');
+          header('Location:mypage.php');
+          exit;
+        }else{
+          debug('クエリ失敗');
+        }
+
+      }catch(Exception $e){
+        debug('エラー発生:'.$e->getMessage());
+        $err_flg['common'] = MSG07;
       }
     }
 
@@ -136,7 +194,7 @@ if(!empty($_POST)){
   }
 
 }
-
+debug('画面実装処理終了<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
 ?>
 
 <?php
@@ -166,21 +224,21 @@ require('head.php');
     <form class="simple-form" method="post">
       <label class="">
         メールアドレス<span class="lab-asterisk">*</span>
-        <input type="text" name="email" class="js-valid-text js-valid-email" value="" placeholder="inu@gmail.com">
+        <input type="text" name="email" class="js-valid-text js-valid-email" value="<?php if(!empty($_POST['email'])) echo $_POST['email']; ?>" placeholder="inu@gmail.com">
       </label>
       <div class="area-msg">
       <?php if(!empty($err_flg['email'])) echo $err_flg['email']; ?>
       </div>
       <label class="">
         パスワード<span class="lab-asterisk">* 半角英数字のみ</span>
-        <input type="password" name="pass" class="js-valid-text js-valid-pass" value="" placeholder="inuinuinu">
+        <input type="password" name="pass" class="js-valid-text js-valid-pass" value="<?php if(!empty($_POST['pass'])) echo $_POST['pass']; ?>" placeholder="inuinuinu">
       </label>
       <div class="area-msg">
         <?php if(!empty($err_flg['pass'])) echo $err_flg['pass']; ?>
       </div>
       <label class="">
         パスワード(再入力)<span class="lab-asterisk">*</span>
-        <input type="password" name="pass_re" class="js-valid-text js-valid-pass-re" value="" placeholder="inuinuinu">
+        <input type="password" name="pass_re" class="js-valid-text js-valid-pass-re" value="<?php if(!empty($_POST['pass_re'])) echo $_POST['pass_re']; ?>" placeholder="inuinuinu">
       </label>
       <div class="area-msg">
       <?php if(!empty($err_flg['pass_re'])) echo $err_flg['pass_re']; ?>
