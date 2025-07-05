@@ -53,7 +53,7 @@ if(!empty($_POST)){
         );
         //クエリ実行
         $stmt = queryPost($dbh,$sql,$data);
-        if($stmt){
+        if($stmt && $stmt->rowCount() > 0){
           debug('仮のパスワードをメールで送信します。');
           $to = $_SESSION['email'];
           $from = 'flipper11041006@yahoo.co.jp';
