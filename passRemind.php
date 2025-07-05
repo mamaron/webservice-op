@@ -91,7 +91,9 @@ EOT;
         $result = sendMail($to,$subject,$comment,$from);
         if($result){
           debug('passRemindSendに遷移します。');
-          $_SESSION['msg_success'] = SUC01;
+          //$_SESSION['msg_success'] = SUC01;
+          $_SESSION['token'] = $token;
+          $_SESSION['email'] = $email;
           header("Location:passRemindSend.php");
           exit;
         }
