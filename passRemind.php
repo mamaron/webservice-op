@@ -56,9 +56,45 @@ if(!empty($_POST)){
           送信先 $to:$email
           送信元 $from：
           $to,$subject,$comment,$from
+          languageの設定等
           mb_send_mail
           */
-          
+          //token作成
+          $token = makeToken();
+          debug('トークンの中身:'.$token);
+          //送信先 
+          $to = $email;
+          //送信元
+          $from = 'flipper11041006@gmail.com';
+          //題名
+          $subject = 'パスワード再発行依頼頂きありがとうございます。';
+          $comment = <<<EOT
+{$email}様
+お問い合わせいただきありがとうございます。
+認証パスワードを発行させて頂きますので、
+hpより入力をお願いいたします。
+
+  認証パスワード：{$token}
+
+何卒宜しくお願い致します。
+～～～～～～～～～～～～～～～～～～～～～～～～
+会社名
+〇〇部
+名前
+〒000-0000 東京都〇〇〇〇
+TEL：03-0000-0000 FAX： 03-0000-0000
+Email：××××××＠××××.com
+URL: https://××××.com/
+～～～～～～～～～～～～～～～～～～～～～～～～
+EOT;
+        //メール送信プログラム
+        $result = sendMail($to,$subject,$comment,$from);
+        if($result){
+          debug('passRemindSendに遷移します。');
+          $_SESSION['msg_success'] = SUC01;
+          header("Location:passRemindSend.php");
+          exit;
+        }
         }else{
           debug('登録されていないアドレスです。');
           $err_msg['email'] = MSG10;
@@ -87,6 +123,7 @@ require('head.php');
    <div class="one-columns-site">
     <h1 class="title">パスワード再設定</h1>
     <div class="area-msg">
+      <?php if(!empty($err_msg['common'])) echo $err_msg['common']; ?>
     </div>
     <p class="passremind_msg">
       登録したメールアドレスを<br>
