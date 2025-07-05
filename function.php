@@ -8,6 +8,26 @@ ini_set('error_log','php.log');//ログの出力先
 ini_set('error_reporting', E_ALL);//エラーレベル
 
 //===================================================
+//セッション
+//===================================================
+//セッションの保存先変更
+session_save_path('/Applications/MAMP/tmp/php_sessions');
+//セッションの保持期限を1時間に伸ばす(その後一定の確率で削除される)
+ini_set('session.gc_maxlifetime',3600);
+//クッキーの有効期限も変える
+session_set_cookie_params([
+  'lifetime' => 3600,
+  'path' => '/',
+  'secure' => false,
+  'httponly' => true,
+  'samesite' => 'Lax'
+]);
+session_start();
+//セッションID都度再発行する
+session_regenerate_id();
+
+
+//===================================================
 //デバッグ
 //===================================================
 function debug($str){
@@ -16,6 +36,20 @@ function debug($str){
   if($debug_flg){
     return error_log($str);
   }
+}
+
+//===================================================
+//デバッグログ初期値
+//===================================================
+function debugLogStart(){
+  if(!empty($_SESSION['login_date'])){
+    debug('セッションユーザーID：'.$_SESSION['user_id']);
+    debug('現在時刻：'.time());
+    debug('セッション変数の中身:'.print_r($_SESSION,true));
+  }else{
+    debug('セッションに何も持っていません.');
+  }
+  
 }
 
 //===================================================
@@ -58,6 +92,7 @@ function validMailDup($email,$key){
   global $err_flg;
   //例外処理
   try{
+    debug('$emailの中身:'.$email);
     //DB接続
     $dbh = dbConnect();
     //sql 論理削除していない有効中のemailアドレスがDBにあるかどうか。
@@ -65,7 +100,8 @@ function validMailDup($email,$key){
     $data = array(':email' => $email);
     //クエリ実
     $stmt = queryPost($dbh,$sql,$data);
-    if(!$stmt){
+    $result = $stmt->fetchColumn();
+    if($result === 0){
       debug('登録されていないアドレスです.');
     }else{
       debug('既に登録されているアドレスになります。');
