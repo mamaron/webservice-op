@@ -1,26 +1,24 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&family=Noto+Sans+JP&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-  <title>マイページ || いぬの駅</title>
-</head>
-<body>
+<?php
+
+//共通関数
+require('function.php');
+
+debug('「「「「「「「「「「「「「「「「「「「「「「「「「');
+debug('「マイページ機能開始');
+debug('「「「「「「「「「「「「「「「「「「「「「「「「「');
+debugLogStart();
+
+//自動認証
+require('auth.php');
+?>
+<?php
+$siteTitle = 'マイページ';
+require('head.php');
+?>
   <!--ヘッダー-->
-  <header class="header">
-    <div class="container">
-      <h1><a href="index.html">いぬの駅</a></h1>
-      <nav>
-        <ul>
-          <li><a href="logout.html">ログアウト</a></li>
-          <li><a href="mypage.html">マイページ</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <?php
+  require('header.php'); 
+  ?>
   <!--メッセージ表示-->
   <div class="msg-flash js-msg-flash">
     登録完了しました！
@@ -90,31 +88,14 @@
 
     </div>
      <!--サイドバー-->
-     <div class="sidebar sidebar-ad">
-      <ul class="mypage-list">
-        <li><a href="hostRegistEdit.html">ホスト登録・編集</a></li>
-        <li><a href="like.html">お気に入り登録一覧</a></li>
-        <li><a href="setting.html">設定</a></li>
-        <li><a href="petDog.html">愛犬登録</a></li>
-        <li><a href="withDraw.html">退会</a></li>
-        <li><a href="adInterview.html">事前面談連絡掲示板</a></li>
-        <li><a href="reservConfirmation.html">予約一覧</a></li>
-      </ul>
-     </div>
+     <?php
+     require('sidebar.php');
+     ?>
+    
     </div>
   </div>
     <!--フッター-->
-    <footer class="footer">
-      <div class="container">
-        <p>Copyright © 2025 いぬの駅. All rights reserved.</p>
-      </div>
-    </footer>
-    <!--JS-->
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.js"
-      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-      crossorigin="anonymous">
-    </script>
-    <script src="main.js"></script>
+    <?php 
+    require('footer.php'); ?>
 </body>
 </html>
