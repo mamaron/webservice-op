@@ -1,0 +1,978 @@
+/*=============================================*/
+/*
+本体の地色
+header　footerの色
+キー色
+
+ベンチマーク
+地色：#f6f6f6
+header,footer色：#453932
+キー色：#9dbc62
+
+
+案
+地色：#f9fafb（ほぼ白、少し青みがかった明るい色）
+header/footer：#2c3e50（濃いネイビーブルー）
+キー色：#3498db（鮮やかなブルー、爽やか）
+
+決定案
+地色background-color: #F6F6F6;  明るい地色
+bodyのカラーcolor: #453932;   文字色は茶系の落ち着いた色 
+上下色： background-color: #627D71;
+差し色：background-color: #9DBC62; 
+*/
+
+/*リセットCSS*/
+/*=============================================*/
+h1,h2,h3,p,div,ul,li,a,body,input{
+  margin:0;
+  padding:0;
+}
+
+
+
+/*=============================================*/
+/*フォント*/
+/*=============================================*/
+body{
+  font-family: "Noto Sans JP", sans-serif;
+  background-color: #F6F6F6;
+  color: #453932;
+}
+h1{
+  font-family: "M PLUS Rounded 1c", sans-serif;
+}
+
+/*=============================================*/
+/*ヘッダー*/
+/*=============================================*/
+.header{
+  background-color: 	#627D71;
+}
+.header .container{
+  width:980px;
+  height:80px;
+  margin:0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header .container h1 a{
+  color:#eee;
+  font-size: 25px;
+  margin-left:100px;
+  text-decoration: none;
+}
+.header .container nav{
+  width:300px;
+}
+.header .container nav ul{
+  overflow: hidden;
+}
+.header .container nav ul li{
+  float:left;
+  margin-right:20px;
+  list-style: none;
+}
+.header .container nav ul li a{
+  text-decoration: none;
+  color:#fff;
+}
+/*=============================================*/
+/*フッター*/
+/*=============================================*/
+.footer{
+  background-color: 	#627D71;
+}
+.footer .container{
+  width:980px;
+  height:40px;
+}
+.footer .container p{
+  color:#eee;
+  font-size: 12px;
+  text-align: center;
+  line-height: 40px;
+}
+/*=============================================*/
+/*サイトサイズ*/
+/*=============================================*/
+.site-width{
+  width:980px;
+  margin:0 auto;
+}
+.site-width .one-columns-site{
+  width:800px;
+  margin:0 auto;
+}
+.site-width .two-columns-site{
+  width:500px;
+  margin:0 auto;
+}
+.site-width .side-width{
+  width:250px;
+}
+/*=============================================*/
+/*タイトル*/
+/*=============================================*/
+.title{
+  text-align: center;
+  margin-bottom: 30px;
+  margin-top:60px;
+  font-size: 25px;
+}
+/*=============================================*/
+/*フォーム*/
+/*=============================================*/
+.label-input{
+  display: block;
+  margin-bottom: 10px;
+}
+label{
+  font-size: 14px;
+}
+.simple-form{
+  width:40%;
+  margin:0 auto 50px;
+  overflow: hidden;
+}
+.lab-asterisk{
+  color:	#E76F51;
+}
+.simple-form input[type="text"],
+.simple-form input[type="password"]{
+  display: block;
+  margin:0 auto;
+  width:100%;
+  height:40px;
+  box-sizing: border-box;
+  margin-top:5px;
+  margin-bottom: 5px;
+  border-radius: 3px;
+  border:1px solid #333;
+  padding-left:5px;
+}
+.simple-form .comment{
+  width:100%;
+  box-sizing: border-box;
+  height:250px;
+  border-radius: 5px;
+  resize: none;
+}
+.simple-form .count{
+  float:right;
+}
+.host-input{
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+input[type="checkbox"]{
+  vertical-align: middle;
+}
+.stay_login{
+  font-size: 12px;
+  margin-left:5px;
+}
+.change-box{
+  display: flex;
+  justify-content: space-between;
+}
+.email-change,.pass-change{
+  width:300px;
+  border:1px solid #B0B0B0;
+  padding-bottom: 30px;
+  margin-bottom: 30px;
+}
+.email-change h2,
+.pass-change h2{
+  font-size: 17px;
+  text-align: center;
+  margin-top:10px;
+  margin-bottom: 10px;
+}
+.email-change input[type="text"],
+.pass-change input[type="password"]{
+  display: block;
+  margin:0 auto;
+  width:70%;
+  height:40px;
+  box-sizing: border-box;
+  margin-top:5px;
+  margin-bottom: 5px;
+  border-radius: 3px;
+  border:1px solid #333;
+  padding-left:5px;
+}
+.email-change label,.email-change .area-msg,
+.pass-change label,.pass-change .area-msg
+{
+  padding-left:80px;
+}
+.form-change-box{
+  margin-bottom: 60px;
+}
+.able-dog{
+  width:100%;
+  height:40px;
+}
+/*=============================================*/
+/*カレンダー*/
+/*=============================================*/
+.calendar{
+  display: grid;
+  grid-template-columns:repeat(7,1fr);/*横に７列*/
+  gap:0px; /*せるの感覚*/
+}
+.calendar-header{
+  margin:0 auto;
+}
+.calendar-cell{
+  border:1px solid #ccc;
+  padding:5px;
+  text-align: center;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+.calendar-cell.active{
+  background-color: #E76F51;
+  color:#fff;
+}
+.calendar-cell.selected{
+  background-color: #3A86FF;
+  color:#fff;
+}
+.calendar-head{
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-top:30px;
+  margin-bottom: 5px;
+}
+.calendar-head .center{
+  justify-self: center;
+}
+.calendar-head .left{
+  justify-self: start;
+}
+.calendar-head .right{
+  justify-self: end;
+}
+/*=============================================*/
+/*ドラッグ&ドロップ*/
+/*=============================================*/
+.host-areadrop{
+  display: flex;
+  justify-content: space-between;
+  margin-top:30px;
+  margin-bottom: 10px;
+}
+.host-pic-left .area-drop,
+.host-pic-right .area-drop{
+  width:150px;
+  height:150px;
+  display: block;
+  border-radius: 150px;
+  text-align: center;
+  line-height: 150px;
+  position: relative;
+  margin:0;
+  border:3px dotted transparent;
+}
+.area-drop{
+  display: block;
+  width:180px;
+  height:180px;
+  background-color:#D9D9D9;
+  margin:0 auto;
+  border-radius: 180px;
+  text-align: center;
+  line-height: 180px;
+  position: relative;
+  border:3px dotted transparent;
+}
+.dog-file{
+  width:100%;
+  height:100%;
+  position: absolute;
+  top:0;
+  left:0;
+  opacity: 0;
+  border-radius: 180px;
+}
+.preview-img{
+  position: absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  border-radius: 100%;
+  display: none;
+}
+/*=============================================*/
+/*ボタン*/
+/*=============================================*/
+/*設定送信ボタン*/
+.change-box-simple-btn{
+  position: relative;
+  left:300px;
+  padding:10px 50px;
+  background-color: #333;
+  color:#fff;
+  border:none;
+  border-radius: 3px;
+  margin-top:20px;
+  margin-bottom: 10px;
+}
+.change-box-simple-btn:hover{
+  cursor: pointer;
+}
+.simple-btn{
+  float:right;
+  padding:10px 20px;
+  background-color: #333;
+  color:#fff;
+  border:none;
+  border-radius: 3px;
+  margin-top:20px;
+  margin-bottom: 10px;
+}
+.simple-btn:hover{
+  cursor: pointer;
+}
+.withdraw-btn{
+  width:40%;
+  height:30px;
+  display: block;
+  margin:0 auto;
+  padding:5px;
+  background-color: #333;
+  color:#fff;
+  border:none;
+  border-radius: 3px;
+  margin-bottom: 10px;
+}
+.withdraw-btn:hover{
+  cursor: pointer;
+}
+.like-btn{
+  display: block;
+  margin:20px auto 0;
+  height:30px;
+  width:200px;
+  background-color: #fff;
+  border:1px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 200;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.like-btn:hover{
+  cursor: pointer;
+}
+.cancel-btn{
+  background-color: #444;
+  color:#fff;
+  text-decoration: none;
+  padding:10px 20px;
+  position:relative;
+  top:60px;
+  left:200px;
+}
+.btn-category{
+  width:100px;
+  height:50px;
+  border:none;
+  border-radius: 8px;
+  background-color: #d4af37;
+  color:#333;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+  top:40px;
+}
+
+/*=============================================*/
+/*エラー表示*/
+/*=============================================*/
+.area-msg{
+  color:#E76F51;
+  font-size:14px;
+  height: 1.2em;
+}
+/*=============================================*/
+/*メッセージ表示*/
+/*=============================================*/
+.msg-flash{
+  text-align: center;
+  height:80px;
+  width:100%;
+  background-color: rgba(255,255,200,0.6);
+  line-height: 80px;
+  position: fixed;
+  color:#E76F51;
+  font-size: 18px;
+  top:0;
+  display: none;
+}
+
+/*=============================================*/
+/*その他*/
+/*=============================================*/
+.divider{
+  text-align: center;
+  width:40%;
+  margin:10px auto 0;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+.divider::before,.divider::after{
+  content:"";
+  display: block;
+  flex:1;
+  width:100%;
+  height:1px;
+  background-color: #444;
+  margin: 0 10px;
+}
+.divider-point{
+  margin-top:10px;
+  margin-bottom: 50px;
+  text-align: center;
+}
+.divider-point a{
+  font-size: 14px;
+  color:#E76F51;
+}
+.passremind_msg{
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+.return-icon{
+  display: block;
+  margin-top:20px;
+  color:#E76F51;
+}
+/*=============================================*/
+/*2カラム*/
+/*=============================================*/
+.two-columns-container{
+  display: flex;
+  margin-bottom:40px;
+}
+/*=============================================*/
+/*2カラムホスト*/
+/*=============================================*/
+.host-pic{
+  width:100%;
+  height:250px;
+}
+.host-pic img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+}
+.host-detail-title{
+  margin-top:20px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+.host-price{
+  display: block;
+  width:450px;
+  margin:0 auto 30px;
+}
+.host-price tbody{
+  display: flex;
+  justify-content: space-between;
+}
+.host-price tbody tr{
+  font-size: 20px;
+}
+.host-price tbody tr th{
+  font-weight: bold;
+  padding-right:10px;
+}
+.host-price tbody tr td{
+  border-bottom: 3px dotted #E76F51;
+}
+.host-comment{
+  padding:5px;
+  border:1px solid rgba(0,0,0,0.1);
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.map-area{
+  width:100%;
+  height:300px;
+  background-color: #888;
+  position: relative;
+}
+.map-area p{
+  position:absolute;
+  top:130px;
+  left:120px;
+  font-size: 25px;
+}
+/*=============================================*/
+/*2カラムサイドバー*/
+/*=============================================*/
+.sidebar{
+  padding:10px;
+  width:250px;
+  height: 750px;
+  border:none;
+  background-color: #fff;
+  border-radius: 8px;
+  padding:16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+.sidebar-img{
+  width:100px;
+  height:100px;
+  border-radius: 100px;
+  background-color: #ccc;
+  margin:10px auto 20px;
+}
+.sidebar-img img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  border-radius: 100px;
+}
+.sidebar-item{
+  font-size: 15px;
+  font-weight: bold;
+}
+.interviewEntry{
+  margin-top:30px;
+  text-align: center;
+  border:1px solid rgba(0,0,0,0.1);
+  padding-top:5px;
+  padding-bottom: 5px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.interviewEntry a{
+  color:#E76F51;
+  text-decoration: none;
+  width:100%;
+  height:100%;
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+}
+.sidebar-host-wrap{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: #FAF3EB;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding:8px;
+  text-decoration: none;
+  color:#453932;
+  margin-bottom: 10px;
+}
+.sidebar-host-wrap.owner{
+  background-color:#F7D5C7;
+}
+.sidebar-owner-img{
+  width:80px;
+  height:80px;
+  border-radius: 80px;
+}
+.sidebar-owner-img img{
+  width:100%;
+  height:100%;
+  border-radius: 80px;
+  object-fit: cover;
+}
+.sidebar-owner-items .owner-items{
+  font-size: 20px;
+}
+.sidebar-host-img{
+  width:80px;
+  height:80px;
+  border-radius: 80px;
+}
+.sidebar-host-img img{
+  width:100%;
+  height:100%;
+  border-radius: 80px;
+  object-fit: cover;
+}
+.sidebar-host-items ul,.sidebar-owner-items ul{
+  list-style: none;
+}
+.sidebar-host-items .label,.sidebar-owner-items .label{
+  color:#E76F51;
+}
+.sidebar-ad p{
+  font-size: 17px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.ad-line{
+  border:2px solid #ccc;
+  width:100%;
+  margin-top:30px;
+  margin-bottom:30px;
+}
+.mypage-list li{
+  list-style: none;
+}
+.mypage-list li a{
+  text-decoration: none;
+  color:#E76F51;
+  font-size: 18px;
+  line-height: 2;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+/*=============================================*/
+/*ホスト一覧*/
+/*=============================================*/
+.like-wrap{
+  margin-bottom: 60px;
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap:20px;
+}
+.host-like-wrap{
+  display: block;
+  width:170px;
+  border:1px solid rgba(0,0,0,0.1);
+  text-decoration: none;
+  color:#453932;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  background-color: #fff;
+  overflow: hidden;
+}
+.like-img{
+  width:100%;
+  height:130px;
+  overflow: hidden;
+}
+.like-img img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+}
+.host-nav{
+  padding: 5px;
+}
+.host-nav li{
+  list-style: none;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.host-nav .label{
+  color:#888;
+  font-weight: bold;
+  padding-right: 5px;
+}
+#ad-two-columns-site{
+  width:600px;
+}
+#ad-re-two-columns-site{
+  width:600px;
+  border:1px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  padding:10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/*=============================================*/
+/*事前連絡ページ*/
+/*=============================================*/
+.adinDog{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:20px;
+  padding:0 30px;
+  max-width:600px;
+}
+.adinterview-wrap p,.day_ad p,.day-ad-url p,.mypage-adInterview p,.mypage-reservCon > p{
+  text-align: center;
+  margin-top:20px;
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: bold;
+}
+.adinDog .adinDog-Img{
+  width:150px;
+  height: 150px;
+  border-radius: 150px;
+}
+.adinDog .adinDog-Img img{
+  width:100%;
+  height:100%;
+  border-radius: 150px;
+  object-fit: cover;
+}
+.adinDog-items{
+  margin-top:30px;
+  font-size: 20px;
+  line-height: 25px;
+}
+.adinDog-items li{
+  list-style: none;
+}
+.adinDog-items li .label{
+  color:#E76F51;
+}
+.day_ad,.day-ad-url{
+  text-align: center;
+}
+.day_ad span,.day-ad-url span{
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 4px dotted #E76F51;
+}
+.day-ad-url{
+  margin-top:20px;
+}
+/*=============================================*/
+/*連絡掲示板*/
+/*=============================================*/
+/*全体*/
+.chat-container{
+  width:550px;
+  height:600px;
+  border:1px solid #eee;
+  border-radius: 10px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-top:20px;
+  margin:20px auto 0;
+}
+/*ヘッダー*/
+.chat-header{
+  background-color: #E76F51;
+  color:#fff;
+  padding: 15px;
+  text-align: center;
+  font-weight: bold;
+}
+/*チャット本体*/
+.chat-body{
+  flex:1;
+  padding:15px;
+  background-color: #F6F6F6;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap:10px;
+  overflow: scroll;
+  height:500px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+/*メッセージ*/
+.message{
+  display: flex;
+}
+.message-block{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.message.other .message-block{
+  align-items: flex-start;
+}
+.message.me{
+  justify-content: flex-end;
+}
+.message.other{
+  justify-content: flex-start;
+}
+.message-date {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+  padding: 0 5px;
+}
+/*メッセージの中身*/
+.message-content{
+  max-width: 70%;
+  padding:10px 15px;
+  border-radius: 15px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+.message.me .message-content{
+  background-color: #E0F7FA;/*自分*/
+  color:#333;
+  border-bottom-right-radius: 2px;
+  border:1px solid #ddd;
+}
+.message.other .message-content{
+  background-color: #fff;/*相手*/
+  color:#333;
+  border-bottom-left-radius: 2px;
+  border:1px solid #ddd;
+}
+/*入力エリア*/
+.chat-input{
+  border-top:1px solid #ddd;
+}
+.chat-input form{
+  width:100%;
+  display: flex;
+  justify-content: space-between;
+}
+.chat-input input[type="text"]{
+  flex:1;
+  border:none;
+  padding:10px;
+  font-size: 14px;
+}
+.chat-input input:focus{
+  outline: none;
+}
+.chat-input input[type="submit"]{
+  background-color: #E76F51;
+  color:#fff;
+  border:none;
+  padding:20px 30px;
+  cursor: pointer;
+}
+.acceptInt{
+  display: block;
+  padding:10px 20px;
+  font-size: 17px;
+  margin: 20px auto 0;
+  border-radius: 8px;
+  background-color: #FFD700;
+  border:none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);;
+}
+.acceptInt:hover{
+  cursor: pointer;
+}
+/*=============================================*/
+/*マイページ*/
+/*=============================================*/
+.my-reservCon-wrap{
+  display: flex;
+  justify-content: space-around;
+}
+.my-reservCon-item{
+  display: block;
+  margin-right:10px;
+  text-decoration: none;
+  text-align: center;
+  color:#333;
+}
+.my-reservCon-item p{
+  margin-top:10px;
+}
+.my-reservCon-item .label{
+  color:#E76F51;
+}
+.my-reservCon-img{
+  width:170px;
+  height:170px;
+  border-radius: 170px;
+}
+.my-reservCon-img img{
+  width:100%;
+  height:100%;
+  border-radius: 170px;
+  object-fit: cover;
+}
+/*=============================================*/
+/*トップページ*/
+/*=============================================*/
+.main-visual{
+  background-image: url('img/eric-ward-ISg37AI2A-s-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  height:500px;
+  color:#fff;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0,0,0,0.5);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+.visual-text h1{
+  font-size: 36px;
+  line-height: 2;
+}
+.visual-text p{
+  margin: 10px 0;
+}
+.main-pagenation{
+  width:200px;
+  margin: 0 auto 30px;
+}
+.main-page-wrap{
+  font-size: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+.main-page-wrap li a{
+  color:#333;
+  text-decoration: none;
+}
+.main-page-wrap li{
+  list-style: none;
+  margin-right:10px;
+  border-bottom: 2px solid transparent;
+  padding:5px;
+}
+.main-page-wrap li:hover{
+  cursor: pointer;
+  border-bottom: 2px solid #333;
+}
+.main-page-wrap .active a{
+  color:#E76F51;
+}
+/*=============================================*/
+/*トップページカテゴリー*/
+/*=============================================*/
+.main-category{
+  background-color: #fff;
+  margin-bottom: 60px;
+}
+.category-form{
+  width:700px;
+  height:100px;
+  margin:0 auto;
+  display: flex;
+  justify-content: space-between;
+  line-height: 50px;
+}
+.cate-wrap{
+  width:150px;
+}
+.cate-wrap p{
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+.category-item{
+  background-color: #f0f0f5;
+  border:1px solid #ccc;
+  border-radius: 8px;
+  padding:8px 20px 8px 12px;
+  font-size: 16px;
+  color:#333;
+  cursor: pointer;
+  display: block;
+  margin-right:30px;
+}
