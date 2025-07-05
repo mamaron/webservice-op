@@ -455,6 +455,13 @@ input[type="checkbox"]{
   display: block;
   margin-top:20px;
   color:#E76F51;
+  margin-left:80px;
+  margin-bottom: 20px;
+}
+.return-icon-host{
+  display: block;
+  margin-top:20px;
+  color:#E76F51;
 }
 /*=============================================*/
 /*2カラム*/
