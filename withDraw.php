@@ -1,25 +1,64 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&family=Noto+Sans+JP&display=swap" rel="stylesheet">
-  <title>退会 || いぬの駅</title>
-</head>
-<body>
+<?php
+//共通関数
+require('function.php');
+
+debug('「「「「「「「「「「「「「「「「「「「「「「「「「');
+debug('「退会機能');
+debug('「「「「「「「「「「「「「「「「「「「「「「「「「');
+debugLogStart();
+
+/*
+退会機能 簡易
+クリック
+->
+DB接続
+=>
+論理削除
+-> 
+topページに遷移
+
+*/
+//=====================================
+//画面処理開始
+//=====================================
+
+//ログイン認証
+require('auth.php');
+
+if(!empty($_POST)){
+  debug('POST送信があります。');
+  //例外処理
+  try{
+    debug('db接続します。複数のテーブルのidを削除します。');
+    //db接続
+    $dbh = dbConnect();
+    debug('トランザクションスタート');
+    $dbh->beginTransaction();
+    //usersテーブル
+    $sql = 'UPDATE users SET delete_flg = 1 WHERE id = :id';
+    $data = array( ':id' => $_SESSION['user_id']);
+    $stmt = queryPost($dbh,$sql,$data);
+
+    ここから
+
+    $dbh->commit();
+  }catch(Exception $e){
+    $dbh->rollback();
+    debug('エラー発生:'.$e->getMessage());
+  }
+}
+
+debug('画面実装処理終了<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
+?>
+
+<?php 
+require('head.php'); 
+?>
   <!--ヘッダー-->
-  <header class="header">
-    <div class="container">
-      <h1><a href="index.html">いぬの駅</a></h1>
-      <nav>
-        <ul>
-          <li><a href="logout.html">ログアウト</a></li>
-          <li><a href="mypage.html">マイページ</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <?php 
+  require('header.php');
+  ?>
+
   <div class="site-width">
    <div class="one-columns-site">
     <h1 class="title">退会する</h1>
@@ -34,17 +73,8 @@
    </div>
   </div>
     <!--フッター-->
-    <footer class="footer js-footer">
-      <div class="container">
-        <p>Copyright © 2025 いぬの駅. All rights reserved.</p>
-      </div>
-    </footer>
-    <!--JS-->
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.js"
-      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-      crossorigin="anonymous">
-    </script>
-    <script src="main.js"></script>
+    <?php 
+    require('footer.php');
+    ?>
 </body>
 </html>
