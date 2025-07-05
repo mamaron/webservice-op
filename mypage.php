@@ -20,9 +20,11 @@ require('head.php');
   require('header.php'); 
   ?>
   <!--メッセージ表示-->
-  <div class="msg-flash js-msg-flash">
-    登録完了しました！
-  </div>
+  <?php if(!empty($_SESSION['msg_success'])){ ?>
+    <div class="msg-flash js-msg-flash">
+      <?php echo getSessionFlash($_SESSION['msg_success']); ?>
+    </div>
+  <?php } ?>
   <!--メイン-->
   <div class="site-width">
    <h1 class="title">マイページ</h1>
