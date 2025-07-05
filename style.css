@@ -399,6 +399,7 @@ input[type="checkbox"]{
   color:#E76F51;
   font-size:14px;
   height: 1.2em;
+  padding-left: 10px;
 }
 /*=============================================*/
 /*メッセージ表示*/
