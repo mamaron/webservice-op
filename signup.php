@@ -41,6 +41,7 @@ define('MSG04','半角英数字のみ使用できます');
 define('MSG05','6文字以上でお願いします');
 define('MSG06','パスワードとパスワード(再入力)が一致しません');
 define('MSG07','不具合が発生いたしました。しばらく経ってから再度お試しください。');
+define('MSG08','既に登録済みのアドレスになります。');
 
 //エラー用の変数
 $err_flg = array();
@@ -63,6 +64,24 @@ function validEmail($email,$key){
 function validMailDup($email,$key){
   global $err_flg;
   //例外処理
+  try{
+    //DB接続
+    $dbh = dbConnect();
+    //sql 論理削除していない有効中のemailアドレスがDBにあるかどうか。
+    $sql = 'SELECT count(*) FROM users WHERE email = :email AND delete_flg = 0';
+    $data = array(':email' => $email);
+    //クエリ実
+    $stmt = queryPost($dbh,$sql,$data);
+    if(!$stmt){
+      debug('登録されていないアドレスです.');
+    }else{
+      debug('既に登録されているアドレスになります。');
+      $err_flg[$key] = MSG08;
+    }
+  }catch(Exception $e){
+    debug('エラー発生：'.$e->getMessage());
+    $err_flg['common'] = MSG07;
+  }
 
 }
 //半角英数字＋記号
@@ -110,8 +129,19 @@ function dbConnect(){
   date_default_timezone_set('Asia/Tokyo');
   return $dbh = new PDO($dsn,$user,$password,$options);
 }
-
-
+//クエリ実行
+function queryPost($dbh,$sql,$data){
+  $stmt = $dbh->prepare($sql);
+  $stmt->execute($data);
+  if($stmt){
+    debug('クエリ成功');
+    return $stmt;
+  }
+  else{
+    debug('クエリ失敗');
+    return false;
+  }
+}
 
 //===================================================
 debug('「「「「「「「「「「「「「「「「「「「「「「「「「');
@@ -159,17 +189,17 @@ if(!empty($_POST)){
         debug('DB接続します');
         //DB接続
         $dbh = dbConnect();
-        
-        //クエリ作成
-        $stmt = $dbh->prepare('INSERT INTO users(email, pass, create_date) VALUES(:email, :pass, :c_date)');
-        //クエリ実行
-        $stmt->execute(array(
+        //SQL
+        $sql = 'INSERT INTO users(email, pass, create_date) VALUES(:email, :pass, :c_date)';
+        //data
+        $data = array(
           ':email' => $email,
           ':pass' => password_hash($pass,PASSWORD_DEFAULT),
           ':c_date' => date('Y-m-d H:i:s')
-        ));
+        );
+        //クエリ実行
+        $stmt = queryPost($dbh,$sql,$data);
         if($stmt){
-          debug('クエリ成功');
           session_start();
           //ユーザーID
           $_SESSION['user_id'] = $dbh->lastInsertId();
@@ -179,10 +209,7 @@ if(!empty($_POST)){
           debug('マイページに遷移します');
           header('Location:mypage.php');
           exit;
-        }else{
-          debug('クエリ失敗');
         }
-
       }catch(Exception $e){
         debug('エラー発生:'.$e->getMessage());
         $err_flg['common'] = MSG07;
@@ -219,7 +246,7 @@ require('head.php');
    <div class="one-columns-site">
     <h1 class="title">ユーザー登録</h1>
     <div class="area-msg">
-
+    <?php if(!empty($err_flg['common'])) echo $err_flg['common']; ?>
     </div>
     <form class="simple-form" method="post">
       <label class="">
