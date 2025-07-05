@@ -22,6 +22,7 @@ debugLogStart();
 //=====================================
 
 //自動認証
+require('auth.php');
 
 //POST送信
 if(!empty($_POST)){
@@ -70,7 +71,7 @@ if(!empty($_POST)){
           //セッションIDとlogin_date,login_limitをそれぞれ格納
           $_SESSION['user_id'] = $result['id'];
           //ログイン日時
-          $_SESSION['login_date'] = date('Y-m-d H:i:s');
+          $_SESSION['login_date'] = time();
           //デフォルト有効期限
           $sesLimit = 60*60;//１h
           if(!empty($stay_login)){
@@ -106,6 +107,11 @@ require('head.php');
   <?php
   require('header.php'); 
   ?>
+  <?php if(!empty($_SESSION['msg_success'])){ ?>
+    <div class="msg-flash js-msg-flash">
+      <?php echo getSessionFlash($_SESSION['msg_success']); ?>
+    </div>
+  <?php }?>
 
   <div class="site-width">
    <div class="one-columns-site">
@@ -132,7 +138,7 @@ require('head.php');
       <input type="submit" name="submit" value="送信"  class="simple-btn">
     </form>
 
-    <p class="divider-point"><a href="passRemind.html">パスワード忘れた方はこちら</a></p>
+    <p class="divider-point"><a href="passRemind.php">パスワード忘れた方はこちら</a></p>
    </div>
   </div>
     <!--フッター-->
