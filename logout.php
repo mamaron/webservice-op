@@ -13,7 +13,7 @@ debug('「「「「「「「「「「「「「「「「「「「「「「「「�
 debugLogStart();
 
 if(!empty($_SESSION['login_date'])){
-  debug('セッションとファイル削除します.セッションIDも');
+  debug('セッションとファイル削除します.');
   $_SESSION = array();
   session_destroy();
   debug('ログインページに遷移します.');
