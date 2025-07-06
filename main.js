@@ -230,7 +230,7 @@ $('.js-area-drop').on('dragleave',function(e){
   $(this).css('border-color','transparent');
 });
 //ドロップ
-$('.js-file-left, .js-file-right').on('change',function(e){
+$('.js-file-left, .js-file-right, .js-file').on('change',function(e){
   //e.preventDefault();
   $('.js-area-drop').css('border-color','transparent');
   //ファイルを取得
