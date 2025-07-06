@@ -77,9 +77,10 @@ if(!empty($_POST)){
         );
         //クエリ実行
         $stmt = queryPost($dbh,$sql,$data);
-        if($stmt){
+        $id_number = $dbh->lastInsertId();
+        if($id_number){
           //ユーザーID
-          $_SESSION['user_id'] = $dbh->lastInsertId();
+          $_SESSION['user_id'] = $id_number;
           //ログイン日時、ログインリミット
           $_SESSION['login_date'] = time();
           $_SESSION['login_limit'] = 60*60;
