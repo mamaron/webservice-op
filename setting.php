@@ -208,21 +208,21 @@ require('head.php');
           <h2>アドレスを変更する</h2>
           <label class="">
             現在のアドレス<span class="lab-asterisk">*</span>
-            <input type="text" name="email" value="<?php echo $dbFormData['email']; ?>" placeholder="inu@gmail.com" class="js-valid-text js-valid-email">
+            <input type="text" name="email" value="<?php echo getFormData('email'); ?>" placeholder="inu@gmail.com" class="js-valid-text js-valid-email">
           </label>
           <div class="area-msg">
             <?php if(!empty($err_msg['email'])) echo $err_msg['email']; ?>
           </div>
           <label class="">
             新しいアドレス<span class="lab-asterisk">*</span>
-            <input type="text" name="email_new" value="" placeholder="inu@gmail.com" class="js-valid-text js-valid-email js-valid-email-new">
+            <input type="text" name="email_new" value="<?php echo getFormData('email_new'); ?>" placeholder="inuinu@gmail.com" class="js-valid-text js-valid-email js-valid-email-new">
           </label>
           <div class="area-msg" style="padding-left:0px;text-align:center;">
             <?php if(!empty($err_msg['email_new'])) echo $err_msg['email_new']; ?>
           </div>
           <label class="">
             新しいアドレス(再入力)<span class="lab-asterisk">*</span>
-            <input type="text" name="email_new_re" value="" placeholder="inu@gmail.com" class="js-valid-text js-valid-email js-valid-email-new-re">
+            <input type="text" name="email_new_re" value="<?php echo getFormData('email_new_re'); ?>" placeholder="inuinu@gmail.com" class="js-valid-text js-valid-email js-valid-email-new-re">
           </label>
           <div class="area-msg" style="padding-left:0px;text-align:center;">
             <?php if(!empty($err_msg['email_new_re'])) echo $err_msg['email_new_re']; ?>
@@ -232,21 +232,21 @@ require('head.php');
           <h2>パスワードを変更する</h2>
           <label class="">
             現在のパスワード<span class="lab-asterisk">*</span>
-            <input type="password" name="pass" value="<?php ?>" placeholder="inuinuinu" class="js-valid-text js-valid-pass1">
+            <input type="password" name="pass" value="" placeholder="inuinuinu" class="js-valid-text js-valid-pass1">
           </label>
           <div class="area-msg" style="padding-left:0px;text-align:center;">
           <?php if(!empty($err_msg['pass'])) echo $err_msg['pass']; ?>
           </div>
           <label class="">
             新しいパスワード<span class="lab-asterisk">*</span>
-            <input type="password" name="pass_new" value="" placeholder="inuinuinu" class="js-valid-text js-valid-pass-new">
+            <input type="password" name="pass_new" value="" placeholder="inuinuinuinu" class="js-valid-text js-valid-pass-new">
           </label>
           <div class="area-msg" style="padding-left:0px;text-align:center;">
             <?php if(!empty($err_msg['pass_new'])) echo $err_msg['pass_new']; ?>
           </div>
           <label class="">
             新しいパスワード(再入力)<span class="lab-asterisk">*</span>
-            <input type="password" name="pass_new_re" value="" placeholder="inuinuinu" class="js-valid-text js-valid-pass-new-re">
+            <input type="password" name="pass_new_re" value="" placeholder="inuinuinuinu" class="js-valid-text js-valid-pass-new-re">
           </label>
           <div class="area-msg" style="padding-left:0px;text-align:center;">
             <?php if(!empty($err_msg['pass_new_re'])) echo $err_msg['pass_new_re']; ?>
