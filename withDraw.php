@@ -99,7 +99,7 @@ require('head.php');
       寂しいわん
     </p>
     <form class="simple-form" method="post">
-      <input type="submit" name="submit" value="退会" class="withdraw-btn">
+      <input type="submit" name="submit"  value="退会" class="withdraw-btn">
     </form>
    </div>
   </div>
