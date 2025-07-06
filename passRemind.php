@@ -133,7 +133,7 @@ require('head.php');
     </p>
     <form class="simple-form" method="post">
       <label class="">
-        <input type="text" name="email" value="<?php if(!empty($_POST['email'])) echo $_POST['email']; ?>" class="js-valid-text js-valid-email" placeholder="inu@gmail.com">
+        <input type="text" name="email" value="<?php echo getFormData('email');?>" class="js-valid-text js-valid-email" placeholder="inu@gmail.com">
       </label>
       <div class="area-msg">
         <?php if(!empty($err_msg['email'])) echo $err_msg['email']; ?>
