@@ -192,6 +192,34 @@ function getUser($u_id){
   }
 }
 //===================================================
+//愛犬データ取得
+//===================================================
+function getDogData($u_id){
+  global $err_msg;
+  debug('愛犬情報取得します。');
+  //例外処理
+  try{
+    //db接続
+    $dbh = dbConnect();
+    //SQL
+    $sql = 'SELECT id, dog_name, sex, age, dog_breed, pic FROM pet_dog WHERE user_id = :u_id AND delete_flg = 0';
+    //data
+    $data = array(':u_id' => $u_id);
+    //クエリ実行
+    $stmt = queryPost($dbh,$sql,$data);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    debug('$resultの中身:'.print_r($result,true));
+    if($result){
+      return $result;
+    }else{
+      return false;
+    }
+  }catch(Exception $e){
+    debug('エラー発生：'.$e->getMessage());
+    $err_msg['common'] = MSG07;
+  }
+}
+//===================================================
 //DB関係
 //===================================================
 //DB接続
@@ -269,11 +297,7 @@ function getFormData($str){
     if(!empty($err_msg[$str])){
       return sanitize($_POST[$str]);
     }else{
-      if($_POST[$str] === $dbFormData[$str]){
         return sanitize($_POST[$str]);
-      }elseif($_POST[$str] !== $dbFormData[$str]){
-        return sanitize($_POST[$str]);
-      }
     }
   }else{
     if(!empty($dbFormData[$str])){
