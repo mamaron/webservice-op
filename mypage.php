@@ -22,7 +22,7 @@ require('head.php');
   <!--メッセージ表示-->
   <?php if(!empty($_SESSION['msg_success'])){ ?>
     <div class="msg-flash js-msg-flash">
-      <?php echo getSessionFlash($_SESSION['msg_success']); ?>
+      <?php echo getSessionFlash('msg_success'); ?>
     </div>
   <?php } ?>
   <!--メイン-->
