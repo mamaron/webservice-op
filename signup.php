@@ -121,21 +121,21 @@ require('head.php');
     <form class="simple-form" method="post">
       <label class="">
         メールアドレス<span class="lab-asterisk">*</span>
-        <input type="text" name="email" class="js-valid-text js-valid-email" value="<?php if(!empty($_POST['email'])) echo $_POST['email']; ?>" placeholder="inu@gmail.com">
+        <input type="text" name="email" class="js-valid-text js-valid-email" value="<?php echo getFormData('email'); ?>" placeholder="inu@gmail.com">
       </label>
       <div class="area-msg">
       <?php if(!empty($err_msg['email'])) echo $err_msg['email']; ?>
       </div>
       <label class="">
         パスワード<span class="lab-asterisk">* 半角英数字のみ</span>
-        <input type="password" name="pass" class="js-valid-text js-valid-pass" value="<?php if(!empty($_POST['pass'])) echo $_POST['pass']; ?>" placeholder="inuinuinu">
+        <input type="password" name="pass" class="js-valid-text js-valid-pass" value="" placeholder="inuinuinu">
       </label>
       <div class="area-msg">
         <?php if(!empty($err_msg['pass'])) echo $err_msg['pass']; ?>
       </div>
       <label class="">
         パスワード(再入力)<span class="lab-asterisk">*</span>
-        <input type="password" name="pass_re" class="js-valid-text js-valid-pass-re" value="<?php if(!empty($_POST['pass_re'])) echo $_POST['pass_re']; ?>" placeholder="inuinuinu">
+        <input type="password" name="pass_re" class="js-valid-text js-valid-pass-re" value="" placeholder="inuinuinu">
       </label>
       <div class="area-msg">
       <?php if(!empty($err_msg['pass_re'])) echo $err_msg['pass_re']; ?>
