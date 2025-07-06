@@ -132,7 +132,7 @@ require('head.php');
     </p>
     <form class="simple-form" method="post">
       <label class="">
-        <input type="text" name="auth_key" class="js-valid-text" value="<?php if(!empty($_POST['auth_key'])) echo $_POST['auth_key'];?>" placeholder="認証キー">
+        <input type="text" name="auth_key" class="js-valid-text" value="<?php echo getFormData('auth_key');?>" placeholder="認証キー">
       </label>
       <div class="area-msg">
         <?php if(!empty($err_msg['auth_key'])) echo $err_msg['auth_key']; ?>
