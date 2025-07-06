@@ -90,7 +90,7 @@ function validHalf($target,msgText){
 function validMatch($target1,$target2,MSG06){
   const val1 = $target1.val();
   const val2 = $target2.val();
-  const msg = $target1.parent().next('.area-msg');
+  const msg = $target2.parent().next('.area-msg');
   if(val1 !== val2){
     msg.text(MSG06);
     return false;
@@ -114,7 +114,7 @@ $('.js-valid-text').on('blur',function(e){
 });
 
 //最大文字数 email,pass,pass_re
-$('.js-valid-pass, .js-valid-pass-re').on('keyup',function(){
+$('.js-valid-email, .js-valid-pass, .js-valid-pass-re').on('keyup',function(){
   validMaxLen($(this),MSG03);
 });
 //最大文字数 dog-name,dog犬種,host-name,都道府県、市区町村、番地、建物、最寄えき
@@ -132,17 +132,36 @@ $('.js-valid-email').on('blur',function(){
   validEmail($(this),MSG02);
 });
 
-//最小文字数、半角英数字、パスワードとパスワード(再)の一致
-$('.js-valid-pass-re, .js-valid-pass').on('blur',function(){
+//emailとemail_reが一致するか
+$('.js-valid-email-new-re').on('blur',function(){
+  //再と一致するかどうか
+  const emailVal = $('.js-valid-email-new').val();
+  const emailValRe = $('.js-valid-email-new-re').val();
+  console.log(emailValRe);
+  console.log('ああああ');
+  if(emailVal !== '' && emailValRe !== ''){
+    if(!validMatch($('.js-valid-email-new'),$('.js-valid-email-new-re'),MSG06)) return;
+  }
+});
+
+//未入力 最小文字数、半角英数字、パスワードとパスワード(再)の一致
+$('.js-valid-pass1, .js-valid-pass-new, .js-valid-pass-new-re').on('keyup',function(){
   //最小文字数
   if(!validMinLen($(this),MSG04)) return;
+  //最大文字数
+  if(!validMaxLen($(this),MSG03)) return;
+})
+$('.js-valid-pass1, .js-valid-pass-new, .js-valid-pass-new-re').on('blur',function(){
   //半角英数字
   if(!validNumber($(this),MSG05)) return;
+})
+
+$('.js-valid-pass-new-re').on('blur',function(){
   //パスワード(再と一致するかどうか)
-  const passVal = $('.js-valid-pass').val();
-  const passValRe = $('.js-valid-pass-re').val();
+  const passVal = $('.js-valid-pass-new').val();
+  const passValRe = $('.js-valid-pass-new-re').val();
   if(passVal !== '' && passValRe !== ''){
-    if(!validMatch($('.js-valid-pass-re'),$('.js-valid-pass'),MSG06)) return;
+    if(!validMatch($('.js-valid-pass-new'),$('.js-valid-pass-new-re'),MSG06)) return;
   }
 });
 //半角数字 pet年齢、ホストage
@@ -189,8 +208,6 @@ var footerHeight = $footer.outerHeight();
 var siteHeight = $(window).height();
 //[C]footerの上からの位置
 var total = siteHeight - footerHeight;
-console.log(siteHeight);
-console.log($footer.offset().top + footerHeight);
 if(siteHeight > ($footer.offset().top + footerHeight)){
   $footer.css({
         'position': 'fixed',
@@ -218,7 +235,7 @@ $('.js-file-left, .js-file-right').on('change',function(e){
   $('.js-area-drop').css('border-color','transparent');
   //ファイルを取得
   var file = this.files[0];
-  console.log(file);
+
   var input = this;
   /*
   File Reader()
