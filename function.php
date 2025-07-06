@@ -250,7 +250,38 @@ function sendMail($to,$subject,$comment,$from){
     $err_msg['common'] = MSG11;
     return false;
    }
-
+}
+//===================================================
+//サニタイズ
+//===================================================
+function sanitize($str){
+  return htmlspecialchars($str,ENT_QUOTES);
+}
+//===================================================
+//入力保持
+//===================================================
+function getFormData($str){
+  global $err_msg;
+  global $dbFormData;
+  //POST送信がある場合
+  if(!empty($_POST[$str])){
+    //エラーがある場合
+    if(!empty($err_msg[$str])){
+      return sanitize($_POST[$str]);
+    }else{
+      if($_POST[$str] === $dbFormData[$str]){
+        return sanitize($_POST[$str]);
+      }elseif($_POST[$str] !== $dbFormData[$str]){
+        return sanitize($_POST[$str]);
+      }
+    }
+  }else{
+    if(!empty($dbFormData[$str])){
+      return sanitize($dbFormData[$str]);
+    }else{
+      return '';
+    }
+  }
 }
 //===================================================
 //その他
