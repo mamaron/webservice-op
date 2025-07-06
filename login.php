@@ -122,14 +122,14 @@ require('head.php');
     <form class="simple-form" method="post">
       <label class="">
         email<span class="lab-asterisk">*</span>
-        <input type="text" name="email" class="js-valid-email js-valid-text" value="<?php if(!empty($_POST['email'])) echo $_POST['email'];?>" placeholder="inu@gmail.com">
+        <input type="text" name="email" class="js-valid-email js-valid-text" value="<?php echo getFormData('email');?>" placeholder="inu@gmail.com">
       </label>
       <div class="area-msg">
       <?php if(!empty($err_msg['email'])) echo $err_msg['email']; ?>
       </div>
       <label class="">
         password<span class="lab-asterisk">*</span>
-        <input type="password" name="pass" class="js-valid-pass js-valid-text" value="<?php if(!empty($_POST['pass'])) echo $_POST['pass'];?>" placeholder="inuinuinu">
+        <input type="password" name="pass" class="js-valid-pass js-valid-text" value="" placeholder="inuinuinu">
       </label>
       <div class="area-msg">
       <?php if(!empty($err_msg['pass'])) echo $err_msg['pass']; ?>
