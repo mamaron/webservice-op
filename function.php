@@ -62,14 +62,19 @@ define('MSG02','emailの形式でお願いします。');
 define('MSG03','最大文字数を超えています');
 define('MSG04','半角英数字のみ使用できます');
 define('MSG05','6文字以上でお願いします');
-define('MSG06','パスワードとパスワード(再入力)が一致しません');
+define('MSG06','入力された値と再入力された値が一致しません。');
 define('MSG07','不具合が発生いたしました。しばらく経ってから再度お試しください。');
 define('MSG08','入力のアドレスは使用できません');
 define('MSG09','アドレスもしくはパスワードが一致しません');
 define('MSG10','登録されていないアドレスになります。');
 define('MSG11','メール送信に失敗しました。しばらく経ってから再度お試しください。');
 define('MSG12','入力された認証キーが一致していません。');
+define('MSG13','現在のアドレスと新しいアドレスが同じです。');
+define('MSG14','入力した現在のパスワードと登録したパスワードが一致しません。');
 define('SUC01','仮のパスワードをメール致しました。ご確認をお願い致します！');
+define('SUC02','emailとパスワードを変更しました！');
+define('SUC03','emailを変更しました！');
+define('SUC04','パスワードを変更しました！');
 //===================================================
 //変数
 //===================================================
@@ -151,7 +156,41 @@ function validMatch($str1,$str2,$key){
     $err_msg[$key] = MSG06;
   }
 }
-
+//現在パスワードとDBパスワードが一致しているか確認
+function validCheckPass($pass,$db_pass,$key){
+  global $err_msg;
+  if(password_verify($pass,$db_pass) === 'false'){
+    debug('入力した現パスワードとDBのパスワードが一致しません');
+    $err_msg[$key] = MSG14;
+  }
+}
+//===================================================
+//ユーザーデータ取得
+//===================================================
+function getUser($u_id){
+  debug('ユーザーのemail,passwordを取得します。');
+  //例外処理
+  try{
+    //db接続
+    $dbh = dbConnect();
+    //sql
+    $sql = 'SELECT email, pass FROM users WHERE id = :u_id AND delete_flg = 0';
+    //data
+    $data = array(
+            ':u_id' => $u_id
+    );
+    //クエリ実行
+    $stmt = queryPost($dbh,$sql,$data);
+    //値を取得
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if($result){
+      return $result;
+    }
+  }catch(Exception $e){
+    debug('エラー発生:'.$e->getMessage());
+    $err_msg['common'] = MSG07;
+  }
+}
 //===================================================
 //DB関係
 //===================================================
@@ -228,10 +267,10 @@ function makeToken(){
 
 //メッセージ表示
 function getSessionFlash($key){
-  if(!empty($key)){
+  if(!empty($_SESSION[$key])){
     //＄msg変数にメッセージ内容を格納し、セッション自体は削除する
-    $msg = $key;
-    session_unset();
+    $msg = $_SESSION[$key];
+    unset($_SESSION[$key]);
     return $msg;
   }
 
