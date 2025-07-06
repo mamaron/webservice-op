@@ -175,7 +175,9 @@ function dbConnect(){
 function queryPost($dbh,$sql,$data){
   $stmt = $dbh->prepare($sql);
   //あくまでもsqlが成功しただけ。何行更新やら、何行返ってきたかは不明。0でもtrueを返す。
+  //executeが成功したかどうか。
   $stmt->execute($data);
+  
   if($stmt){
     debug('クエリ成功');
     return $stmt;
