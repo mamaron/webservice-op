@@ -245,7 +245,7 @@ $('.js-file-left, .js-file-right, .js-file').on('change',function(e){
   var reader = new FileReader();
   reader.onload = function(e){
     $(input).siblings('.js-img').attr('src',e.target.result);
-    $(input).siblings('.js-img').css('display','block');
+    //$(input).siblings('.js-img').css('display','block');
   }
   reader.readAsDataURL(file);
 });
