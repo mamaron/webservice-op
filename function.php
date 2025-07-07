@@ -71,10 +71,13 @@ define('MSG11','メール送信に失敗しました。しばらく経ってか�
 define('MSG12','入力された認証キーが一致していません。');
 define('MSG13','現在のアドレスと新しいアドレスが同じです。');
 define('MSG14','入力した現在のパスワードと登録したパスワードが一致しません。');
+define('MSG15','半角数字のみでお願いします。');
 define('SUC01','仮のパスワードをメール致しました。ご確認をお願い致します！');
 define('SUC02','emailとパスワードを変更しました！');
 define('SUC03','emailを変更しました！');
 define('SUC04','パスワードを変更しました！');
+define('SUC05','愛犬情報登録成功しました。！');
+define('SUC06','愛犬情報編集成功しました。！');
 //===================================================
 //変数
 //===================================================
@@ -91,7 +94,7 @@ $err_msg = [];
 //未入力
 function validRequired($str,$key){
   global $err_msg;
-  if(empty($str)){
+  if(!isset($str) || $str === ''){
     $err_msg[$key] = MSG01;
   }
 }
@@ -127,6 +130,13 @@ function validMailDup($email,$key){
     $err_msg['common'] = MSG07;
   }
 
+}
+//半角数字
+function validHalf($str,$key){
+  global $err_msg;
+  if(!preg_match("/^[0-9]+$/",$str)){
+    $err_msg[$key] = MSG15;
+  }
 }
 //半角英数字
 function validPass($str,$key){
@@ -208,7 +218,6 @@ function getDogData($u_id){
     //クエリ実行
     $stmt = queryPost($dbh,$sql,$data);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    debug('$resultの中身:'.print_r($result,true));
     if($result){
       return $result;
     }else{
@@ -280,6 +289,76 @@ function sendMail($to,$subject,$comment,$from){
    }
 }
 //===================================================
+//画像アップロード
+//===================================================
+function uploadImg($img,$key){
+  global $err_msg;
+  /*
+  従来のエラー
+  MIMEタイプ確認
+  サイズ確認
+  ファイル名変更
+  アップロード先選定
+  権限譲渡
+  ムーブアップロードファイル
+  */
+  //例外処理
+  try{
+    //従来のエラー確認から
+    if(!empty($img['error']) && $img['error'] !== 0){
+      switch($img['error']){
+        case UPLOAD_ERR_INI_SIZE :
+          throw new RuntimeException('ファイルサイズが大きすぎます。');
+          break;
+        case UPLOAD_ERR_FORM_SIZE :
+          throw new RuntimeException('ファイルサイズがフォーム指定サイズを超えてます。');
+          break;
+        case UPLOAD_ERR_NO_FILE :
+          throw new RuntimeException('ファイルが選択されていません。');
+          break;
+        case UPLOAD_ERR_NO_TMP_DIR :
+          throw new RuntimeException('一時保存先がありません。');
+          break;
+          default:
+          throw new RuntimeException('その他の理由でファイルアップロード失敗しました。');
+          break;
+      }
+    }  
+      //MIMEタイプ確認
+      $finfo = new finfo(FILEINFO_MIME_TYPE);
+      $mime = $finfo->file($img['tmp_name']);
+      $allowed_type = ['image/jpeg','image/png','image/gif'];
+      if(!in_array($mime,$allowed_type)){
+        throw new RuntimeException('画像ファイルではありません。');
+      }
+      //ファイルサイズ
+      $max_size = 2 * 1024 * 1024; //2MB
+      if($img['size'] > $max_size){
+        throw new RuntimeException('ファイルサイズが大きすぎます。');
+      }
+      //ファイル名変更
+      $filename = $img['name'];
+      //拡張子取得
+      $ext = pathinfo($filename,PATHINFO_EXTENSION);
+      //日時
+      $datetime = time();
+      $randomStr = bin2hex(random_bytes(4));
+      //新しいファイル名
+      $newFileName = $datetime. '_' .$randomStr. '.'.$ext;
+      //ファイル移動先
+      $upload_Path = 'uploads/'.$newFileName;
+      //アップロード
+      move_uploaded_file($img['tmp_name'],$upload_Path);
+      //権限
+      chmod($upload_Path,0644);
+      return $newFileName;
+    
+  }catch(RuntimeException $e){
+    debug('エラー発生：'.$e->getMessage());
+  }
+}
+  
+//===================================================
 //サニタイズ
 //===================================================
 function sanitize($str){
@@ -292,15 +371,15 @@ function getFormData($str){
   global $err_msg;
   global $dbFormData;
   //POST送信がある場合
-  if(!empty($_POST[$str])){
+  if(isset($_POST[$str])){
     //エラーがある場合
-    if(!empty($err_msg[$str])){
+    if(isset($err_msg[$str])){
       return sanitize($_POST[$str]);
     }else{
         return sanitize($_POST[$str]);
     }
   }else{
-    if(!empty($dbFormData[$str])){
+    if(isset($dbFormData[$str])){
       return sanitize($dbFormData[$str]);
     }else{
       return '';
