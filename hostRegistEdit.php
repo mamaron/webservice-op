@@ -1,30 +1,31 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&family=Noto+Sans+JP&display=swap" rel="stylesheet">
-  <title>ホスト登録・編集 || いぬの駅</title>
-</head>
-<body>
+<?php
+//共通関数
+require('function.php');
+
+debug('「「「「「「「「「「「「「「「「「「「「「「「「「');
+debug('「ホスト情報登録・編集');
+debug('「「「「「「「「「「「「「「「「「「「「「「「「「');
+debugLogStart();
+
+//自動認証
+require('auth.php');
+
+
+
+?>
+<?php
+$siteTitle = 'ホスト登録・編集';
+require('head.php');
+?>
   <!--ヘッダー-->
-  <header class="header">
-    <div class="container">
-      <h1><a href="index.html">いぬの駅</a></h1>
-      <nav>
-        <ul>
-          <li><a href="logout.html">ログアウト</a></li>
-          <li><a href="mypage.html">マイページ</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <?php
+  require('header.php');
+  ?>
   <div class="site-width">
    <div class="one-columns-site">
     <h1 class="title">ホスト登録する</h1>
     <div class="area-msg">
-
+      <?php if(!empty($err_msg['common'])) echo $err_msg['common']; ?>
     </div>
     <form class="simple-form" method="post" style="width:50%;">
       <label class="label-input">
@@ -32,49 +33,49 @@
         <input type="text" name="host_name" class="js-valid-text js-valid-name" value="" placeholder="山田 太郎">
       </label>
       <div class="area-msg">
-
+        <?php if(!empty($err_msg['host_name'])) echo $err_msg['host_name']; ?>
       </div>
       <label class="label-input">
         郵便番号<span class="lab-asterisk">*</span> ※ハイフン無しで入力ください
         <input type="text" name="zip" class="js-valid-text js-valid-zip" value="" placeholder="1110000" style="width:50%;margin:0px;">
       </label>
       <div class="area-msg">
-
+        <?php if(!empty($err_msg['zip'])) echo $err_msg['zip']; ?>
       </div>
       <label class="label-input">
         都道府県<span class="lab-asterisk">*</span> 
         <input type="text" name="prefecture" class="js-valid-text js-valid-pref" value="" placeholder="東京都" style="width:50%;margin:0px;">
       </label>
       <div class="area-msg">
-
+        <?php if(!empty($err_msg['prefecture'])) echo $err_msg['prefecture']; ?>
       </div>
       <label class="label-input">
         市区町村<span class="lab-asterisk">*</span> 
         <input type="text" name="municipalities" class="js-valid-text js-valid-pref" value="" placeholder="港区虎ノ門" style="width:50%;margin:0px;">
       </label>
       <div class="area-msg">
-       
+        <?php if(!empty($err_msg['municipalities'])) echo $err_msg['municipalities']; ?>
       </div>
       <label class="label-input">
         番地<span class="lab-asterisk">*</span> 
         <input type="text" name="street" class="js-valid-text js-valid-pref" value="" placeholder="1-1-1" style="width:50%;margin:0px;">
       </label>
       <div class="area-msg">
-
+        <?php if(!empty($err_msg['street'])) echo $err_msg['street']; ?>
       </div>
       <label class="label-input">
         建物名<span class="lab-asterisk">*</span> 
         <input type="text" name="building" class="js-valid-text js-valid-pref" value="" placeholder="虎ノ門ビル100F" style="width:50%;margin:0px;">
       </label>
       <div class="area-msg">
-
+        <?php if(!empty($err_msg['building'])) echo $err_msg['building']; ?>
       </div>
       <label class="label-input">
         最寄り駅<span class="lab-asterisk">*</span> 
         <input type="text" name="station" class="js-valid-text js-valid-pref" value="" placeholder="虎ノ門駅" style="width:50%;margin:0px;">
       </label>
       <div class="area-msg">
-
+        <?php if(!empty($err_msg['station'])) echo $err_msg['station']; ?>
       </div>
       <label class="label-input">
         対応可能なワンちゃんの大きさ<span class="lab-asterisk">*</span><br>
@@ -86,6 +87,7 @@
         </select>
       </label>
       <div class="area-msg">
+        <?php if(!empty($err_msg['able_dog'])) echo $err_msg['able_dog']; ?>
       </div>
       <label class="label-input">
         プラン料金<span class="lab-asterisk">*</span><br>
@@ -94,9 +96,17 @@
         <span>お泊まり</span>
         <input type="text" name="price2" class="js-valid-text js-valid-price" value="" placeholder="5000">
       </label>
-      <div class="area-msg">
-  
-      </div>
+      <?php if(!empty($err_msg['price1'])): ?>
+        <div class="area-msg">
+          <?php echo $err_msg['price1'];  ?>
+        </div>
+      <?php endif; ?>
+      <?php if(!empty($err_msg['price2'])): ?>
+        <div class="area-msg">
+          <?php echo $err_msg['price2'];  ?>
+        </div>
+      <?php endif; ?>
+
       <div class="host-areadrop">
 
         <div class="host-pic-left">
@@ -186,17 +196,6 @@
    </div>
   </div>
     <!--フッター-->
-    <footer class="footer js-footer">
-      <div class="container">
-        <p>Copyright © 2025 いぬの駅. All rights reserved.</p>
-      </div>
-    </footer>
-    <!--JS-->
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.js"
-      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-      crossorigin="anonymous">
-    </script>
-    <script src="main.js"></script>
-</body>
-</html>
+    <?php
+    require('footer.php');
+    ?>
