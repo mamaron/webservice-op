@@ -10,10 +10,110 @@ debugLogStart();
 //自動認証
 require('auth.php');
 
+/*
+・DBからホスト情報取得＋展開
+・POST送信
+・未入力チェック
+・変数格納(画像はアップロード)
+
+・DB情報と違う場合はバリデーション
+・DBと完全に一致した場合はエラー
+・DB接続,新規の場合insert,編集の場合はupdate
+・問題なければメッセージセットしてマイページ遷移
+
+======== 
+<カレンダーAjax機能>
+予想処理フロー
+・どうにかして現在日時及びそれに伴うカレンダーを作成(先月、来月分も自動)
+・押す =>js側でdata属性受け取る=>PHPに投げる。=>DB保存してJSに返す
+=>cssの処理する。
+＊＊DB保存時に、そのデータがあればdelete、なければinsertの処理をするようにする。
+それに合わせてcssの処理もかえる。
+=======================================================================
+*/
+//ホスト情報取得
+$dbFormData = getHostData($_SESSION['user_id']);
+debug('ホスト情報:'.print_r($dbFormData,true));
+
 
 //======================================== 
 //画面表示処理開始
 //========================================
+
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+  debug('POST送信があります。');
+  debug('POST情報:'.print_r($_POST,true));
+  debug('FILES情報;'.print_r($_FILES,true));
+  //未入力チェック
+  validRequired($_POST['hostname'],'hostname');
+  validRequired($_POST['zip'],'zip');
+  validRequired($_POST['prefecture'],'prefecture');
+  validRequired($_POST['municipalities'],'municipalities');
+  validRequired($_POST['street'],'street');
+  validRequired($_POST['building'],'building');
+  validRequired($_POST['station'],'station');
+  validRequired($_POST['able_dog'],'able_dog');
+  validRequired($_POST['price1'],'price1');
+  validRequired($_POST['price2'],'price2');
+  validRequired($_FILES['pic1'],'pic1');
+  validRequired($_FILES['pic2'],'pic2');
+  validRequired($_POST['comment'],'comment');
+
+  if(empty($err_msg)){
+    debug('未入力バリデOK。変数詰め込み');
+    $hostName = $_POST['hostname'];
+    $zip = (int)$_POST['zip'];
+    $prefecture = $_POST['prefecture'];
+    $municipalities = $_POST['municipalities'];
+    $street = $_POST['street'];
+    $able_dog = $_POST['able_dog'];
+    $price1 = (int)$_POST['price1'];
+    $price2 = (int)$_POST['price2'];
+    $pic1 = (!empty($_FILES['pic1'])) ?  uploadImg($_FILES['pic1'],'pic1') : $_POST['img_prev1'];
+    $pic2 = (!empty($_FILES['pic2'])) ?  uploadImg($_FILES['pic2'],'pic1') : $_POST['img_prev2'];
+    $comment = $_POST['comment'];
+
+    if(empty($err_msg)){
+      debug('変数格納&&画像アップロード成功');
+      debug('DB情報と異なる場合はバリデーション。');
+      //ホスト名前
+      if($dbFormData['hostname'] !== $hostName){
+        validMaxLen($hostName,'hostName',50);
+      }
+      //郵便番号
+      if($dbFormData['zip'] !== $zip){
+        $math = 7;
+        validHalf($zip,'zip');
+        if(!empty($err_msg)){
+          validMatch($zip,$math,'zip');
+        }
+      }
+      //都道府県
+      if($dbFormData['prefecture'] !== $prefecture){
+        validMaxLen($prefecture,'prefecture',50);
+      }
+      //市区町村
+      if($dbFormData['municipalities'] !== $municipalities){
+        validMaxLen($municipalities,'municipalities',50);
+      }
+      //番地
+      if($dbFormData['street'] !== $street){
+        validMaxLen($street,'street',50);
+      }
+      //対応可能サイズ
+      if($dbFormData['able_dog'] !== $able_dog){
+        validMisMatch($able_dog,'able_dog');
+        if(empty($err_msg)){
+          //セレクトボックスのvalueの値
+          validSelect($able_dog,'able_dog');
+        }
+      }
+    }
+
+  }
+
+
+}
 
 
 ?>
@@ -27,7 +127,7 @@ require('head.php');
   ?>
   <div class="site-width">
    <div class="one-columns-site">
-    <h1 class="title">ホスト登録する</h1>
+    <h1 class="title"> <?php echo (!empty($dbFormData)) ? 'ホスト編集する' : 'ホスト登録する'; ?> </h1>
     <div class="area-msg">
       <?php if(!empty($err_msg['common'])) echo $err_msg['common']; ?>
     </div>
@@ -35,10 +135,10 @@ require('head.php');
 
       <label class="label-input">
         名前<span class="lab-asterisk">*</span>
-        <input type="text" name="host_name" class="js-valid-text js-valid-name" value="<?php echo getFormData('host_name'); ?>" placeholder="山田 太郎">
+        <input type="text" name="hostname" class="js-valid-text js-valid-name" value="<?php echo getFormData('hostname'); ?>" placeholder="山田 太郎">
       </label>
       <div class="area-msg">
-        <?php if(!empty($err_msg['host_name'])) echo $err_msg['host_name']; ?>
+        <?php if(!empty($err_msg['hostname'])) echo $err_msg['hostname']; ?>
       </div>
 
       <label class="label-input">
@@ -93,9 +193,9 @@ require('head.php');
         対応可能なワンちゃんの大きさ<span class="lab-asterisk">*</span><br>
         <select name="able_dog" id="" class="able-dog">
           <option value="0">選択してください</option>
-          <option value="1" <?php if($able_dog === 1) echo 'selected'; ?>>小型犬のみ</option>
-          <option value="2" <?php if($able_dog === 2) echo 'selected'; ?>>小型犬〜中型犬</option>
-          <option value="3" <?php if($able_dog === 3) echo 'selected'; ?>>全てのサイズ対応可</option>
+          <option value="1" <?php if(!empty($able_dog) && $able_dog === 1) echo 'selected'; ?>>小型犬のみ</option>
+          <option value="2" <?php if(!empty($able_dog) && $able_dog === 2) echo 'selected'; ?>>小型犬〜中型犬</option>
+          <option value="3" <?php if(!empty($able_dog) && $able_dog === 3) echo 'selected'; ?>>全てのサイズ対応可</option>
         </select>
       </label>
       <div class="area-msg">
@@ -109,23 +209,19 @@ require('head.php');
         <span>お泊まり</span>
         <input type="text" name="price2" class="js-valid-text js-valid-price" value="<?php echo getFormData('price2'); ?>" placeholder="5000">
       </label>
-      <?php if(!empty($err_msg['price1'])): ?>
+      <?php if(!empty($err_msg['price1']) && !empty($err_msg['price2'])){ ?>
         <div class="area-msg">
           <?php echo $err_msg['price1'];  ?>
         </div>
-      <?php endif; ?>
-      <?php if(!empty($err_msg['price2'])): ?>
+      <?php }elseif(!empty($err_msg['price1'])){ ?>
+        <div class="area-msg">
+          <?php echo $err_msg['price1'];  ?>
+        </div>
+      <?php }elseif(!empty($err_msg['price2'])){?>
         <div class="area-msg">
           <?php echo $err_msg['price2'];  ?>
         </div>
-      <?php endif; ?>
-      <?php if(!empty($err_msg['price1']) && !empty($err_msg['price2'])): ?>
-        <div class="area-msg">
-          <?php echo $err_msg['price1'];  ?><br>
-          <?php echo $err_msg['price2'];  ?>
-        </div>
-      <?php endif; ?>  
-
+      <?php } ?>
       <div class="host-areadrop">
         <?php
         $img_path1 = '';
@@ -154,7 +250,6 @@ require('head.php');
             <img src="uploads/<?php echo sanitize($img_path1); ?>" alt="" class="preview-img js-img">
             <input type="hidden" name="img_prev1" value="<?php echo $img_path1;?>">
             <input type="file" name="pic1" class="dog-file js-file-left" value="">
-            
           </label>
         </div>
         <div class="host-pic-right">
@@ -240,7 +335,7 @@ require('head.php');
       </div>
       
 
-      <input type="submit" name="submit" value="登録！" class="simple-btn">
+      <input type="submit" name="submit" value=" <?php echo (!empty($dbFormData)) ? '編集!' : '登録！'; ?>" class="simple-btn">
     </form>
    </div>
   </div>
