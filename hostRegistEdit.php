@@ -55,8 +55,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
   validRequired($_POST['able_dog'],'able_dog');
   validRequired($_POST['price1'],'price1');
   validRequired($_POST['price2'],'price2');
-  validRequired($_FILES['pic1'],'pic1');
-  validRequired($_FILES['pic2'],'pic2');
+  validRequired((!empty($_FILES['pic1']['name'])) ? $_FILES['pic1']['name'] : $_POST['img_prev1'],'pic1');
+  validRequired((!empty($_FILES['pic2']['name'])) ? $_FILES['pic1']['name'] : $_POST['img_prev2'],'pic2');
   validRequired($_POST['comment'],'comment');
 
   if(empty($err_msg)){
@@ -66,31 +66,72 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $prefecture = $_POST['prefecture'];
     $municipalities = $_POST['municipalities'];
     $street = $_POST['street'];
+    $building = $_POST['building'];
+    $station = $_POST['station'];
     $able_dog = $_POST['able_dog'];
     $price1 = (int)$_POST['price1'];
     $price2 = (int)$_POST['price2'];
-    $pic1 = (!empty($_FILES['pic1'])) ?  uploadImg($_FILES['pic1'],'pic1') : $_POST['img_prev1'];
-    $pic2 = (!empty($_FILES['pic2'])) ?  uploadImg($_FILES['pic2'],'pic1') : $_POST['img_prev2'];
+    $pic1 = (!empty($_FILES['pic1']['name'])) ?  uploadImg($_FILES['pic1'],'pic1') : $_POST['img_prev1'];
+    $pic2 = (!empty($_FILES['pic2']['name'])) ?  uploadImg($_FILES['pic2'],'pic2') : $_POST['img_prev2'];
     $comment = $_POST['comment'];
 
     if(empty($err_msg)){
       debug('変数格納&&画像アップロード成功');
       debug('DB情報と異なる場合はバリデーション。');
-      //ホスト名前
-      if($dbFormData['hostname'] !== $hostName){
+      //初手入力バリデーション
+      if(empty($dbFormData)){
+        debug('初回バリデーション,');
+        //ホスト名前
         validMaxLen($hostName,'hostName',50);
-      }
-      //郵便番号
-      if($dbFormData['zip'] !== $zip){
-        $math = 7;
+        //郵便番号
         validHalf($zip,'zip');
-        if(!empty($err_msg)){
-          validMatch($zip,$math,'zip');
+        if(empty($err_msg)){
+          $math = 7;
+          validMathMatch($zip,$math,'zip');
         }
-      }
-      //都道府県
+        //都道府県
+        validMaxLen($prefecture,'prefecture',10);
+        //市区町村
+        validMaxLen($municipalities,'municipalities',50);
+        //建物
+        validMaxLen($building,'building',50);
+        //駅
+        validMaxLen($station,'station',50);
+        //対応可能サイズ
+        validMisMatch($able_dog,'able_dog');
+        if(empty($err_msg['able_dog'])){
+          //セレクトボックスのvalueの値
+          validSelect($able_dog,'able_dog');
+        }
+        //金額1
+        validHalf($price1,'price1');
+        if(empty($err_msg)){
+          validMaxLen($price1,'price1');
+        }
+        //金額2
+        validHalf($price2,'price2');
+        if(empty($err_msg)){
+          validMaxLen($price2,'price2');
+        }
+        //自己紹介
+        validMaxLen($comment,'comment',500);
+      }else{
+        debug('編集バリデーション,');
+        //ホスト名前
+        if($dbFormData['hostname'] !== $hostName){
+          validMaxLen($hostName,'hostName',50);
+        }
+        //郵便番号
+        if((int)$dbFormData['zip'] !== $zip){
+          validHalf($zip,'zip');
+          if(empty($err_msg)){
+            $math = 7;
+            validMathMatch($zip,$math,'zip');
+          }
+        }
+        //都道府県
       if($dbFormData['prefecture'] !== $prefecture){
-        validMaxLen($prefecture,'prefecture',50);
+        validMaxLen($prefecture,'prefecture',10);
       }
       //市区町村
       if($dbFormData['municipalities'] !== $municipalities){
@@ -100,6 +141,14 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
       if($dbFormData['street'] !== $street){
         validMaxLen($street,'street',50);
       }
+      //建物
+      if($dbFormData['building'] !== $building){
+        validMaxLen($building,'building',50);
+      }
+      //駅
+      if($dbFormData['station'] !== $station){
+        validMaxLen($station,'station',50);
+      }
       //対応可能サイズ
       if($dbFormData['able_dog'] !== $able_dog){
         validMisMatch($able_dog,'able_dog');
@@ -108,7 +157,144 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
           validSelect($able_dog,'able_dog');
         }
       }
+      //金額
+      if($dbFormData['price1'] !== $price1){
+        validHalf($price1,'price1');
+        if(empty($err_msg)){
+          validMaxLen($price1,'price1');
+        }
+      }
+      if($dbFormData['price2'] !== $price2){
+        validHalf($price2,'price2');
+        if(empty($err_msg)){
+          validMaxLen($price2,'price2');
+        }
+      }
+      //自己紹介
+      if($dbFormData['comment'] !== $comment){
+        validMaxLen($comment,'comment',500);
+      }
+
+      debug('DB情報とPOST情報が同じ場合はエラー出す');
+        $db_data = [
+          'hostname' => $dbFormData['hostname'],
+          'zip' => $dbFormData['zip'],
+          'prefecture' => $dbFormData['prefecture'],
+          'municipalities' => $dbFormData['municipalities'],
+          'street' => $dbFormData['street'],
+          'building' => $dbFormData['building'],
+          'station' => $dbFormData['station'],
+          'able_dog' => $dbFormData['able_dog'],
+          'price1' => $dbFormData['price1'],
+          'price2' => $dbFormData['price2'],
+          'pic1' => $dbFormData['pic1'],
+          'pic2' => $dbFormData['pic2'],
+          'comment' => $dbFormData['comment']
+        ];
+        $post_data = [
+          'hostname' => $hostName,
+          'zip' => $zip,
+          'prefecture' => $prefecture,
+          'municipalities' => $municipalities,
+          'street' => $street,
+          'building' => $building,
+          'station' => $station,
+          'able_dog' => $able_dog,
+          'price1' => $price1,
+          'price2' => $price2,
+          'pic1' => $pic1,
+          'pic2' => $pic2,
+          'comment' => $comment
+        ];
+        if($db_data === $post_data){
+          $err_msg['common'] = 'DB情報と同じです。';
+        }
+      }
+        if(empty($err_msg)){
+          debug('バリデーションOK');
+          debug('DB情報と完全には一致しません。');
+          debug('DB接続しちゃいます。');
+          //例外処理
+          try{
+            //DB接続
+            $dbh = dbConnect();
+            if(!empty($dbFormData)){
+              debug('アップデートします。');
+              $sql = 'UPDATE host SET hostname = :h_name, zip = :zip, prefecture = :pref, municipalities = :munis, street = :street,
+              building = :building, station = :station, able_dog = :able_dog, price1 = :price1, price2 = :price2, pic1 = :pic1, pic2 = :pic2, comment = :comment WHERE user_id = :u_id';
+              $data = array(
+                      ':h_name' => $hostName,
+                      ':zip' => $zip,
+                      ':pref' => $prefecture,
+                      ':munis' => $municipalities,
+                      ':street' => $street,
+                      ':building' => $building,
+                      ':station' => $station,
+                      ':able_dog' => $able_dog,
+                      ':price1' => $price1,
+                      ':price2' => $price2,
+                      ':pic1' => $pic1,
+                      ':pic2' => $pic2,
+                      ':comment' => $comment,
+                      ':u_id' => $_SESSION['user_id']
+              );
+              //クエリ実行
+              $stmt = queryPost($dbh,$sql,$data);
+              $result = $stmt->rowCount();
+              if($result > 0){
+                debug('アップデート成功');
+                $_SESSION['msg_success'] = SUC07;
+                debug('マイページに遷移します。');
+                header("Location:mypage.php");
+                exit;
+              }else{
+                debug('アップデート失敗');
+                $err_msg['common'] = MSG07;
+              }
+            }else{
+              debug('新規登録します。');
+              $sql = 'INSERT INTO host(user_id, hostname, zip, prefecture, municipalities, street, building, station,
+              able_dog, price1, price2, pic1, pic2, comment, create_date) VALUES(:u_id, :h_name, :zip, :pref, :munis, :street, :building, :station,
+              :able_dog, :price1, :price2, :pic1, :pic2, :comment, :c_date)';
+              $data = array(
+                      ':u_id' => $_SESSION['user_id'],
+                      ':h_name' => $hostName,
+                      ':zip' => $zip,
+                      ':pref' => $prefecture,
+                      ':munis' => $municipalities,
+                      ':street' => $street,
+                      ':building' => $building,
+                      ':station' => $station,
+                      ':able_dog' => $able_dog,
+                      ':price1' => $price1,
+                      ':price2' => $price2,
+                      ':pic1' => $pic1,
+                      ':pic2' => $pic2,
+                      ':comment' => $comment,
+                       ':c_date' => date('Y-m-d H:i:s')
+              );
+              //クエリ実行
+              $stmt = queryPost($dbh,$sql,$data);
+              $result = $stmt->rowCount();
+              if($result > 0){
+                debug('登録成功');
+                $_SESSION['msg_success'] = SUC08;
+                debug('マイページに遷移します。');
+                header("Location:mypage.php");
+                exit;
+              }else{
+                debug('登録失敗');
+                $err_msg['common'] = MSG07;
+              }
+            }
+          }catch(Exception $e){
+            debug('エラー発生：'.$e->getMessage());
+            $err_msg['common'] = MSG07;
+          }
+        }
+      
     }
+
 
   }
 
@@ -193,9 +379,15 @@ require('head.php');
         対応可能なワンちゃんの大きさ<span class="lab-asterisk">*</span><br>
         <select name="able_dog" id="" class="able-dog">
           <option value="0">選択してください</option>
-          <option value="1" <?php if(!empty($able_dog) && $able_dog === 1) echo 'selected'; ?>>小型犬のみ</option>
-          <option value="2" <?php if(!empty($able_dog) && $able_dog === 2) echo 'selected'; ?>>小型犬〜中型犬</option>
-          <option value="3" <?php if(!empty($able_dog) && $able_dog === 3) echo 'selected'; ?>>全てのサイズ対応可</option>
+          <?php if(!empty($dbFormData['able_dog'])){ ?>
+            <option value="1" <?php if($dbFormData['able_dog'] === 1) echo 'selected'; ?>>小型犬のみ</option>
+            <option value="2" <?php if($dbFormData['able_dog']  === 2) echo 'selected'; ?>>小型犬〜中型犬</option>
+            <option value="3" <?php if($dbFormData['able_dog']  === 3) echo 'selected'; ?>>全てのサイズ対応可</option>
+          <?php }else{ ?> 
+            <option value="1" <?php if(!empty($able_dog) && $able_dog === 1) echo 'selected'; ?>>小型犬のみ</option>
+            <option value="2" <?php if(!empty($able_dog) && $able_dog === 2) echo 'selected'; ?>>小型犬〜中型犬</option>
+            <option value="3" <?php if(!empty($able_dog) && $able_dog === 3) echo 'selected'; ?>>全てのサイズ対応可</option>
+          <?php } ?>
         </select>
       </label>
       <div class="area-msg">
@@ -205,6 +397,9 @@ require('head.php');
       <label class="label-input">
         プラン料金<span class="lab-asterisk">*</span><br>
         <span>おさんぽ</span>
+        <?php
+          $price1_int = (int)getFormData('price1');
+         ?>
         <input type="text" name="price1" class="js-valid-text js-valid-price" value="<?php echo getFormData('price1'); ?>" placeholder="1000">
         <span>お泊まり</span>
         <input type="text" name="price2" class="js-valid-text js-valid-price" value="<?php echo getFormData('price2'); ?>" placeholder="5000">
@@ -241,7 +436,6 @@ require('head.php');
             $img_path2 = $dbFormData['pic2'];
           }
         ?>
-
         <div class="host-pic-left">
           顔写真<span class="lab-asterisk">*</span>
           <label class="area-drop js-area-drop">
@@ -263,26 +457,28 @@ require('head.php');
           </label>
         </div>
       </div>
-      <?php if(!empty($err_msg['pic1'])): ?>
+      <?php 
+        $pic1_msg = (!empty($err_msg['pic1'])) ? $err_msg['pic1'] : '';
+        $pic2_msg = (!empty($err_msg['pic2'])) ? $err_msg['pic2'] : '';
+      ?>
+      <?php if($pic1_msg || $pic2_msg): ?>
       <div class="area-msg">
-        <?php if(!empty($err_msg['pic1'])) echo $err_msg['pic1']; ?>
-      </div>
-      <?php endif; ?>
-      <?php if(!empty($err_msg['pic2'])): ?>
-      <div class="area-msg">
-        <?php if(!empty($err_msg['pic2'])) echo $err_msg['pic2']; ?>
+        <?php if($pic1_msg && $pic1_msg === $pic2_msg){ ?>
+          <?php echo $err_msg['pic1']; ?>
+        <?php }else{ ?>
+          <?php if($pic1_msg) echo $err_msg['pic1'] . '<br>'; ?>
+          <?php if($pic2_msg) echo $err_msg['pic2']; ?>
+        <?php }?>  
       </div>
       <?php endif; ?>
 
       <label class="host-input" for="">
         自己紹介<span class="lab-asterisk">*</span>
-        <textarea name="comment" class="comment js-valid-text js-valid-comment" id="">
-          <?php echo getFormData('comment'); ?>
-        </textarea>
+        <textarea name="comment" class="comment js-valid-text js-valid-comment" id=""><?php echo getFormData('comment'); ?></textarea>
         <div class="count"><span class="js-count-text">0</span>/500</div>
       </label>
       <div class="area-msg">
-        <?php if(!empty($err_msg['comment'])) echo $err_msg['common']; ?>
+        <?php if(!empty($err_msg['comment'])) echo $err_msg['comment']; ?>
       </div>
 
       <div class="calendar-head">
