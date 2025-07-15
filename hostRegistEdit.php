@@ -34,6 +34,17 @@ require('auth.php');
 //ホスト情報取得
 $dbFormData = getHostData($_SESSION['user_id']);
 debug('ホスト情報:'.print_r($dbFormData,true));
+//ホストのスケジュール管理
+$dbCalendarDatesRaw = getHostAvailable($_SESSION['user_id']);
+//連想配列の配列なので、日付だけの配列に転換
+$dbCalendarDates = [];
+if(!empty($dbCalendarDatesRaw)){
+  foreach($dbCalendarDatesRaw as $item){
+    $dbCalendarDates[] = $item['available_date'];
+  }
+}
+debug('ああああ:'.print_r($dbCalendarDates,true));
+
 
 
 //======================================== 
@@ -493,16 +504,58 @@ require('head.php');
         $ym = date('Y-m');
       }
       //タイムスタンプを作成し、フォーマットをチェックする
-      $timestamp = strtotime($ym . '-01');
+      $timestamp = strtotime($ym . '-01');//年月に初日をプラスしてタイムスタンプ化
       if($timestamp === false){//エラー対策として形式チェックを追加
         //falseが返ってきた時は現在の年月、タイムスタンプを取得
         $ym = date('Y-m');
-        $timestamp = strtotime($ym . '-01');
+        $timestamp = strtotime($ym . '-01');//-01は明示的につける。付けないとどの日にちかわからないとなってバージョンによってはエラー発生。バグになる可能性がある。
       }
       //今月の日付　フォーマット 例)2025-07-15
       $today = date('Y-m-j');
+      //カレンダーのタイトル月
+      $html_title = date('Y年n月',$timestamp);
+      //前月・次月の年月を取得
+      //strtotime(,基準)
+      $prev = date('Y-m',strtotime('-1 month',$timestamp));
+      $next = date('Y-m',strtotime('+1 month',$timestamp));
+      //該当月の日数を取得
+      $day_count = date('t',$timestamp);
+      debug($ym . 'の日数'.$day_count);
+      debug($ym.'の日数のデータ型:'.gettype($day_count));
+      //1日の曜日取得
+      $youbi = date('w',$timestamp);
+      debug('1日の曜日:'.$youbi);
+      //カレンダー作成の準備
+      $weeks = [];
+      $week = '';
+
+      //第一週目:空のセルを追加=>1日目の初め位置を曜日で測ってその分の空セル
+      $week .= str_repeat('<td></td>',$youbi);
+
+      for($day = 1; $day <= $day_count;$day++,$youbi++){
+        //日付のフォーマット作成
+        $dateStr = $ym . '-' . sprintf('%02d',$day);
+        //照合してクラスを追加
+        $class = in_array($dateStr,$dbCalendarDates) ? 'host_available' : '';
+        if($day < 10){
+          $week .= '<td class="calender-td '.$class .'" data-u_id="' . $_SESSION['user_id'] . '" data-date="' . $ym .'-0' .$day .'">' . $day . '</td>';
+        }else{
+          $week .= '<td class="calender-td '.$class .'" data-u_id="' . $_SESSION['user_id'] . ' " data-date="' . $ym .'-' .$day .'">' . $day . '</td>';
+        }
+
+        //週終わりもしくは月末の場合
+        if(($youbi % 7) == 6 || $day == (int)$day_count){
+          //6は土曜日
+          //月の最終日、空のセルを追加
+
+          if($day === (int)$day_count){
+            $week .= str_repeat('<td></td>', 6 - ($youbi % 7));
+          }
+          $weeks[] = '<tr>' . $week . '</tr>';
+          $week = '';
+        }
+      }
       ?>
-      
 
       <div class="calender-head">
         <h3><a href="hostRegistEdit.php?ym=<?php echo $prev;?>" class="left">&lt;</a>
@@ -523,51 +576,11 @@ require('head.php');
             <th>金</th>
             <th>土</th>
           </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-            <td>4</td>
-            <td>5</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td>7</td>
-            <td>8</td>
-            <td>9</td>
-            <td>10</td>
-            <td>11</td>
-            <td>12</td>
-          </tr>
-          <tr>
-            <td>13</td>
-            <td>14</td>
-            <td>15</td>
-            <td>16</td>
-            <td>17</td>
-            <td>18</td>
-            <td>19</td>
-          </tr>
-          <tr>
-            <td>20</td>
-            <td>21</td>
-            <td>22</td>
-            <td>23</td>
-            <td>24</td>
-            <td>25</td>
-            <td>26</td>
-          </tr>
-          <tr>
-            <td>27</td>
-            <td>28</td>
-            <td>29</td>
-            <td>30</td>
-            <td>31</td>
-            <td></td>
-            <td></td>
-          </tr>
+          <?php
+           foreach($weeks as $week){
+            echo $week;
+           }
+          ?>
         </table>
       </div>
       
