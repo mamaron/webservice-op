@@ -68,7 +68,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $street = $_POST['street'];
     $building = $_POST['building'];
     $station = $_POST['station'];
-    $able_dog = $_POST['able_dog'];
+    $able_dog = (int)$_POST['able_dog'];
     $price1 = (int)$_POST['price1'];
     $price2 = (int)$_POST['price2'];
     $pic1 = (!empty($_FILES['pic1']['name'])) ?  uploadImg($_FILES['pic1'],'pic1') : $_POST['img_prev1'];
@@ -178,15 +178,15 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
       debug('DB情報とPOST情報が同じ場合はエラー出す');
         $db_data = [
           'hostname' => $dbFormData['hostname'],
-          'zip' => $dbFormData['zip'],
+          'zip' => (int)$dbFormData['zip'],
           'prefecture' => $dbFormData['prefecture'],
           'municipalities' => $dbFormData['municipalities'],
           'street' => $dbFormData['street'],
           'building' => $dbFormData['building'],
           'station' => $dbFormData['station'],
           'able_dog' => $dbFormData['able_dog'],
-          'price1' => $dbFormData['price1'],
-          'price2' => $dbFormData['price2'],
+          'price1' => (int)$dbFormData['price1'],
+          'price2' => (int)$dbFormData['price2'],
           'pic1' => $dbFormData['pic1'],
           'pic2' => $dbFormData['pic2'],
           'comment' => $dbFormData['comment']
@@ -206,6 +206,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
           'pic2' => $pic2,
           'comment' => $comment
         ];
+        //$diff = array_diff_assoc($db_data,$post_data);
+        //debug('差分'.print_r($diff,true));
         if($db_data === $post_data){
           $err_msg['common'] = 'DB情報と同じです。';
         }
@@ -241,6 +243,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
               //クエリ実行
               $stmt = queryPost($dbh,$sql,$data);
               $result = $stmt->rowCount();
+              debug('クエリ結果:'.$result);
               if($result > 0){
                 debug('アップデート成功');
                 $_SESSION['msg_success'] = SUC07;
@@ -480,54 +483,92 @@ require('head.php');
       <div class="area-msg">
         <?php if(!empty($err_msg['comment'])) echo $err_msg['comment']; ?>
       </div>
+      <!--カレンダー-->
+      <?php
+      //前月、次月リンクが選択された場合はGETパラメータから年月を取得
+      if(isset($_GET['ym'])){
+        $ym = $_GET['ym'];
+      }else{
+        //今月の年月を表示
+        $ym = date('Y-m');
+      }
+      //タイムスタンプを作成し、フォーマットをチェックする
+      $timestamp = strtotime($ym . '-01');
+      if($timestamp === false){//エラー対策として形式チェックを追加
+        //falseが返ってきた時は現在の年月、タイムスタンプを取得
+        $ym = date('Y-m');
+        $timestamp = strtotime($ym . '-01');
+      }
+      //今月の日付　フォーマット 例)2025-07-15
+      $today = date('Y-m-j');
+      ?>
+      
 
-      <div class="calendar-head">
-        <a href="" class="left">5月分</a>
-        <span class="center">6月分カレンダー</span>
-        <a href="" class="right">7月分</a>
+      <div class="calender-head">
+        <h3><a href="hostRegistEdit.php?ym=<?php echo $prev;?>" class="left">&lt;</a>
+        <span class="center"><?php echo $html_title; ?></span>
+        <a href="hostRegistEdit.php?ym=<?php echo $next; ?>" class="right">&gt;</a></h3>
       </div>
       <label for="" style="color:#E76F51;">
         ※対応可能日を選択してください
       </label>
-      <div class="calendar">
-        <div class="calendar-header">日</div>
-        <div class="calendar-header">月</div>
-        <div class="calendar-header">火</div>
-        <div class="calendar-header">水</div>
-        <div class="calendar-header">木</div>
-        <div class="calendar-header">金</div>
-        <div class="calendar-header">土</div>
-
-        <div class="calendar-cell" data-date="2025-06-01">1</div>
-        <div class="calendar-cell" data-date="2025-06-02">2</div>
-        <div class="calendar-cell">3</div>
-        <div class="calendar-cell">4</div>
-        <div class="calendar-cell">5</div>
-        <div class="calendar-cell">6</div>
-        <div class="calendar-cell">7</div>
-        <div class="calendar-cell">8</div>
-        <div class="calendar-cell">9</div>
-        <div class="calendar-cell">10</div>
-        <div class="calendar-cell">11</div>
-        <div class="calendar-cell">12</div>
-        <div class="calendar-cell">13</div>
-        <div class="calendar-cell">14</div>
-        <div class="calendar-cell">15</div>
-        <div class="calendar-cell">16</div>
-        <div class="calendar-cell">17</div>
-        <div class="calendar-cell">18</div>
-        <div class="calendar-cell">19</div>
-        <div class="calendar-cell">20</div>
-        <div class="calendar-cell">21</div>
-        <div class="calendar-cell">22</div>
-        <div class="calendar-cell">23</div>
-        <div class="calendar-cell">24</div>
-        <div class="calendar-cell">25</div>
-        <div class="calendar-cell">26</div>
-        <div class="calendar-cell">27</div>
-        <div class="calendar-cell">28</div>
-        <div class="calendar-cell">29</div>
-        <div class="calendar-cell">30</div>
+      <div class="cale-container">
+        <table class="table table-bordered">
+          <tr>
+            <th>日</th>
+            <th>月</th>
+            <th>火</th>
+            <th>水</th>
+            <th>木</th>
+            <th>金</th>
+            <th>土</th>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+            <td>5</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>7</td>
+            <td>8</td>
+            <td>9</td>
+            <td>10</td>
+            <td>11</td>
+            <td>12</td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td>14</td>
+            <td>15</td>
+            <td>16</td>
+            <td>17</td>
+            <td>18</td>
+            <td>19</td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td>21</td>
+            <td>22</td>
+            <td>23</td>
+            <td>24</td>
+            <td>25</td>
+            <td>26</td>
+          </tr>
+          <tr>
+            <td>27</td>
+            <td>28</td>
+            <td>29</td>
+            <td>30</td>
+            <td>31</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
       </div>
       
 
