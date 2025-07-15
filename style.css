@@ -258,6 +258,12 @@ input[type="checkbox"]{
 .calendar-head .right{
   justify-self: end;
 }
+.calender-td{
+  cursor: pointer;
+}
+.host_available{
+  color:#E76F51;
+}
 /*=============================================*/
 /*ドラッグ&ドロップ*/
 /*=============================================*/
