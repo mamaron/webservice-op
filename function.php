@@ -283,6 +283,29 @@ function getHostData($u_id){
     return false;
   }
 }
+//===================================================
+//ホスト可能日
+//===================================================
+function getHostAvailable($u_id){
+  debug('ホスト可能日取得');
+  //例外処理
+  try{
+    $dbh = dbConnect();
+    $sql = 'SELECT available_date FROM availability WHERE host_id = :u_id';
+    $data = array(':u_id' => $u_id);
+    $stmt = queryPost($dbh,$sql,$data);
+    $result = $stmt->fetchAll();
+    if($result > 0){
+      debug('可能日データ取得OK');
+      return $result;
+    }else{
+      debug('可能日データ取得がありません');
+      return '';
+    }
+  }catch(Exception $e){
+    debug('エラー発生：'.$e->getMessage());
+  }
+}
 
 //===================================================
 //DB関係
