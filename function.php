@@ -72,12 +72,16 @@ define('MSG12','入力された認証キーが一致していません。');
 define('MSG13','現在のアドレスと新しいアドレスが同じです。');
 define('MSG14','入力した現在のパスワードと登録したパスワードが一致しません。');
 define('MSG15','半角数字のみでお願いします。');
+define('MSG16','正しい選択肢を選択してください。');
+define('MSG17','7文字で入力ください。');
 define('SUC01','仮のパスワードをメール致しました。ご確認をお願い致します！');
 define('SUC02','emailとパスワードを変更しました！');
 define('SUC03','emailを変更しました！');
 define('SUC04','パスワードを変更しました！');
 define('SUC05','愛犬情報登録成功しました。！');
 define('SUC06','愛犬情報編集成功しました。！');
+define('SUC07','ホスト情報編集しました。！');
+define('SUC08','ホスト情報登録成功しました。！');
 //===================================================
 //変数
 //===================================================
@@ -159,6 +163,13 @@ function validMinLen($str,$key,$min = 6){
     $err_msg[$key] = MSG05;
   }
 }
+//文字列が一致してるか
+function validMathMatch($str1,$str2,$key){
+  global $err_msg;
+  if(mb_strlen($str1) !== $str2){
+    $err_msg[$key] = MSG17;
+  }
+}
 //マッチ確認
 function validMatch($str1,$str2,$key){
   global $err_msg;
@@ -172,6 +183,21 @@ function validCheckPass($pass,$db_pass,$key){
   if(password_verify($pass,$db_pass) === 'false'){
     debug('入力した現パスワードとDBのパスワードが一致しません');
     $err_msg[$key] = MSG14;
+  }
+}
+//セレクトボックス(ホスト用)
+function validSelect($str,$key){
+  global $err_msg;
+  $validOptions = ['1', '2' , '3'];
+  if(!in_array($str,$validOptions,true)){
+    $err_msg[$key] = MSG16;
+  }
+}
+//マッチしてしまった場合のチェック
+function validMisMatch($str,$key,$match = 0){
+  global $err_msg;
+  if($str === $match){
+    $err_msg[$key] = MSG16;
   }
 }
 //===================================================
@@ -225,9 +251,39 @@ function getDogData($u_id){
     }
   }catch(Exception $e){
     debug('エラー発生：'.$e->getMessage());
-    $err_msg['common'] = MSG07;
+    return false;
   }
 }
+//===================================================
+//ホストデータ取得
+//===================================================
+
+function getHostData($u_id){
+  debug('ホストデータ取得します。');
+  //例外処理
+  try{
+    //db接続
+    $dbh = dbConnect();
+    //SQL
+    $sql = 'SELECT hostname, zip, prefecture, municipalities, street, building, station, able_dog, 
+    price1, price2, pic1, pic2, comment FROM host WHERE user_id = :u_id AND delete_flg = 0';
+    $data = array(':u_id' => $u_id);
+    //クエリ実行
+    $stmt = queryPost($dbh,$sql,$data);
+
+    //結果
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if($result){
+      return $result;
+    }else{
+      return false;
+    }
+  }catch(Exception $e){
+    debug('エラー発生：'.$e->getMessage());
+    return false;
+  }
+}
+
 //===================================================
 //DB関係
 //===================================================
@@ -255,11 +311,11 @@ function queryPost($dbh,$sql,$data){
   $stmt->execute($data);
   
   if($stmt){
-    debug('クエリ成功');
+    debug('SQL実行自体は成功');
     return $stmt;
   }
   else{
-    debug('クエリ失敗');
+    debug('sql実行自体は失敗');
     return false;
   }
 }
@@ -355,6 +411,7 @@ function uploadImg($img,$key){
     
   }catch(RuntimeException $e){
     debug('エラー発生：'.$e->getMessage());
+    $err_msg['common'] = $e->getMessage();
   }
 }
   
