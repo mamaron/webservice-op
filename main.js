@@ -259,6 +259,36 @@ if(location.pathname.includes('adInterview.php')){
   }
 }
 
+//===================================
+//カレンダー
+//===================================
+$('td[data-date]').on('click',function(){
+  const date = $(this).data('date');
+  const id = $(this).data('u_id');
+  const $cell = $(this);
+
+  $.ajax({
+    url: 'save_date.php',
+    type: 'POST',
+    data: {
+      date: date,
+      id: id
+    },
+    dataType: 'json',
+    success: function(response){
+      if(response.status === 'success'){
+        $cell.addClass('host_available');
+      } else if(response.status === 'delete'){
+        $cell.removeClass('host_available');
+      }else{
+        alert('保存に失敗しました。');
+      }
+    },
+    error: function(){
+      alert('通信エラーが発生しました。');
+    }
+  });
+});
 
 });
 
