@@ -188,7 +188,7 @@ function validCheckPass($pass,$db_pass,$key){
 //セレクトボックス(ホスト用)
 function validSelect($str,$key){
   global $err_msg;
-  $validOptions = ['1', '2' , '3'];
+  $validOptions = [1,2,3];
   if(!in_array($str,$validOptions,true)){
     $err_msg[$key] = MSG16;
   }
