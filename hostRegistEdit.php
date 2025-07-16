@@ -435,14 +435,14 @@ require('head.php');
         <?php
         $img_path1 = '';
         $img_path2 = '';
-          if(!empty($_POST['pic1'])){//POST
+          if(!empty($_FILES['pic1'])){//POST
             $img_path1 = $pic1;
           }elseif(!empty($_POST['img_prev1'])){//img_prev1に仮情報があったら。
             $img_path1 = $_POST['img_prev1'];
           }elseif(!empty($dbFormData['pic1'])){//DBにデータがあったら アップロードした画像
             $img_path1 = $dbFormData['pic1'];
           }
-          if(!empty($_POST['pic2'])){//POSTがあったら
+          if(!empty($_FILES['pic2'])){//POSTがあったら
             $img_path2 = $pic2;
           }elseif(!empty($_POST['img_prev2'])){//img_prev1に仮情報があったら。
             $img_path2 = $_POST['img_prev2'];
