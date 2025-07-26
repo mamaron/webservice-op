@@ -1,6 +1,6 @@
 <header class="header">
     <div class="container">
-      <h1><a href="index.html">いぬの駅</a></h1>
+      <h1><a href="index.php">いぬの駅</a></h1>
       <nav>
         <ul>
           <?php if(!empty($_SESSION['login_date'])){ ?>
