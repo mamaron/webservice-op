@@ -158,6 +158,7 @@ label{
   height:250px;
   border-radius: 5px;
   resize: none;
+  padding:5px;
 }
 .simple-form .count{
   float:right;
@@ -702,7 +703,12 @@ input[type="checkbox"]{
   padding:10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-
+.search-wrap{
+  text-align: right;
+  margin-bottom: 20px;
+  margin-right:20px;
+  font-size: 18px;
+}
 /*=============================================*/
 /*事前連絡ページ*/
 /*=============================================*/
@@ -931,13 +937,12 @@ input[type="checkbox"]{
   margin: 10px 0;
 }
 .main-pagenation{
-  width:200px;
+  width:100px;
   margin: 0 auto 30px;
 }
 .main-page-wrap{
   font-size: 20px;
   display: flex;
-  justify-content: space-around;
 }
 .main-page-wrap li a{
   color:#333;
@@ -945,7 +950,7 @@ input[type="checkbox"]{
 }
 .main-page-wrap li{
   list-style: none;
-  margin-right:10px;
+  margin-right:25px;
   border-bottom: 2px solid transparent;
   padding:5px;
 }
@@ -961,7 +966,8 @@ input[type="checkbox"]{
 /*=============================================*/
 .main-category{
   background-color: #fff;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
 }
 .category-form{
   width:700px;
@@ -999,4 +1005,13 @@ input[type="checkbox"]{
 }
 .table-bordered tbody tr td{
   text-align: center;
+}
+/*=============================================*/
+/*ホスト可能日*/
+/*=============================================*/
+.calender-head{
+  text-align: center;
+}
+.calender-head a{
+  color:#453932;
 }
