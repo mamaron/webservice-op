@@ -55,10 +55,6 @@ if(!empty($_POST)){
     $sql5 = 'UPDATE board SET delete_flg = 1 WHERE `owner` = :u_id OR host = :u_id';
     $data5 = array(':u_id' => $_SESSION['user_id']);
     $stmt5 = queryPost($dbh,$sql5,$data5);
-    //availabilityテーブル
-    $sql6 = 'UPDATE `availability` SET delete_flg = 1 WHERE host_id = :u_id';
-    $data6 = array(':u_id' => $_SESSION['user_id']);
-    $stmt6 = queryPost($dbh,$sql6,$data6);
 
     $dbh->commit();
 
