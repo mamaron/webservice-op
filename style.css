@@ -224,6 +224,9 @@ input[type="checkbox"]{
   grid-template-columns:repeat(7,1fr);/*横に７列*/
   gap:0px; /*せるの感覚*/
 }
+.hostDetail-calendar{
+  width:250px;
+}
 .calendar-header{
   margin:0 auto;
   text-align: center;
@@ -250,6 +253,11 @@ input[type="checkbox"]{
   margin-top:30px;
   margin-bottom: 5px;
 }
+.hostDetail-calendar-head{
+  margin-top:30px;
+  margin-bottom: 5px;
+  text-align: center;
+}
 .calendar-head .center{
   justify-self: center;
 }
@@ -264,6 +272,9 @@ input[type="checkbox"]{
 }
 .host_available{
   color:#E76F51;
+}
+.host_availableDetail{
+  color:blue;
 }
 /*=============================================*/
 /*ドラッグ&ドロップ*/
@@ -520,18 +531,16 @@ input[type="checkbox"]{
   border:1px solid rgba(0,0,0,0.1);
   border-radius: 5px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  min-height: 100px;
 }
 .map-area{
   width:100%;
   height:300px;
-  background-color: #888;
   position: relative;
 }
-.map-area p{
-  position:absolute;
-  top:130px;
-  left:120px;
-  font-size: 25px;
+.map-area iframe{
+  width:100%;
+  height:100%;
 }
 /*=============================================*/
 /*2カラムサイドバー*/
@@ -573,14 +582,19 @@ input[type="checkbox"]{
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
-.interviewEntry a{
+.interviewEntry input[type="submit"]{
   color:#E76F51;
   text-decoration: none;
+  display: block;
+  border:none;
   width:100%;
   height:100%;
-  display: block;
   font-size: 16px;
   font-weight: 600;
+  background-color: #fff;
+}
+.interviewEntry input[type="submit"]:hover{
+  cursor: pointer;
 }
 .sidebar-host-wrap{
   display: flex;
