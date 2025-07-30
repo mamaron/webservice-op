@@ -262,33 +262,67 @@ if(location.pathname.includes('adInterview.php')){
 //===================================
 //カレンダー
 //===================================
-$('td[data-date]').on('click',function(){
+$('td[data-u_id]').on('click',function(){
+  console.log('aaa');
   const date = $(this).data('date');
-  const id = $(this).data('u_id');
+  const id = $(this).data('u_id');//この場合はホスト登録時のユーザー
+  const $cell = $(this);
+    $.ajax({
+      url: 'save_date.php',
+      type: 'POST',
+      data: {
+        date: date,
+        id: id,//この場合はホスト登録時のユーザー
+      },
+      dataType: 'json',
+      success: function(response){
+        if(response.status === 'success'){
+          $cell.addClass('host_available');
+        } else if(response.status === 'delete'){
+          $cell.removeClass('host_available');
+        }else{
+          alert('保存に失敗しました。');
+        }
+      },
+      error: function(){
+        alert('通信エラーが発生しました。');
+      }
+    });
+});
+
+$('td[data-host_id]').on('click',function(){
+  const date = $(this).data('date');
+  const id = $(this).data('buy_id');//飼い主側ID
+  const h_id = $(this).data('host_id');//ホスト側ID
   const $cell = $(this);
 
   $.ajax({
-    url: 'save_date.php',
+    url: 'save_dateDetail.php',
     type: 'POST',
     data: {
       date: date,
-      id: id
+      id: id,//選択する側のユーザーに変わる。(session)
+      h_id: h_id//登録した側のホストユーザーになる。(GET)
     },
     dataType: 'json',
     success: function(response){
       if(response.status === 'success'){
-        $cell.addClass('host_available');
+        $cell.addClass('host_availableDetail').removeClass('host_available');
       } else if(response.status === 'delete'){
-        $cell.removeClass('host_available');
+        $cell.removeClass('host_availableDetail').addClass('host_available');
+      } else if(response.status === 'error'){
+        alert('ログインしてください！');
+      }else if(response.status === 'notAvaible'){
+        alert('ホスト側が対応出来ない日です。');
       }else{
-        alert('保存に失敗しました。');
+        alert('通信エラーが発生しました。');
       }
     },
     error: function(){
       alert('通信エラーが発生しました。');
     }
   });
-});
+})
 
 });
 
