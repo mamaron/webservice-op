@@ -97,8 +97,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         //郵便番号
         validHalf($zip,'zip');
         if(empty($err_msg)){
-          $math = 7;
-          validMathMatch($zip,$math,'zip');
+          validMathMatch($zip,'zip');
         }
         //都道府県
         validMaxLen($prefecture,'prefecture',10);
@@ -394,13 +393,13 @@ require('head.php');
         <select name="able_dog" id="" class="able-dog">
           <option value="0">選択してください</option>
           <?php if(!empty($dbFormData['able_dog'])){ ?>
-            <option value="1" <?php if($dbFormData['able_dog'] === 1) echo 'selected'; ?>>小型犬のみ</option>
-            <option value="2" <?php if($dbFormData['able_dog']  === 2) echo 'selected'; ?>>小型犬〜中型犬</option>
-            <option value="3" <?php if($dbFormData['able_dog']  === 3) echo 'selected'; ?>>全てのサイズ対応可</option>
+            <option value="小型犬のみ" <?php if($dbFormData['able_dog'] === '小型犬のみ') echo 'selected'; ?>>小型犬のみ</option>
+            <option value="小型犬〜中型犬" <?php if($dbFormData['able_dog']  === '小型犬〜中型犬') echo 'selected'; ?>>小型犬〜中型犬</option>
+            <option value="全てのサイズ対応可" <?php if($dbFormData['able_dog']  === '全てのサイズ対応可') echo 'selected'; ?>>全てのサイズ対応可</option>
           <?php }else{ ?> 
-            <option value="1" <?php if(!empty($able_dog) && $able_dog === 1) echo 'selected'; ?>>小型犬のみ</option>
-            <option value="2" <?php if(!empty($able_dog) && $able_dog === 2) echo 'selected'; ?>>小型犬〜中型犬</option>
-            <option value="3" <?php if(!empty($able_dog) && $able_dog === 3) echo 'selected'; ?>>全てのサイズ対応可</option>
+            <option value="小型犬のみ" <?php if(!empty($able_dog) && $able_dog === '小型犬のみ') echo 'selected'; ?>>小型犬のみ</option>
+            <option value="小型犬〜中型犬" <?php if(!empty($able_dog) && $able_dog === '小型犬〜中型犬') echo 'selected'; ?>>小型犬〜中型犬</option>
+            <option value="全てのサイズ対応可" <?php if(!empty($able_dog) && $able_dog === '全てのサイズ対応可') echo 'selected'; ?>>全てのサイズ対応可</option>
           <?php } ?>
         </select>
       </label>
