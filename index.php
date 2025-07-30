@@ -50,8 +50,6 @@ $genreCategory = (!empty($_GET['genre'])) ? $_GET['genre'] : '';
 $priceCategory = (!empty($_GET['price'])) ? $_GET['price'] : '';
 
 
-
-
 //$_GET['huge'] = '0';
 //var_dump(!empty($_GET['huge'])); => false
 
@@ -64,15 +62,18 @@ debug('$currentPageNumの値:'.$currentPageNum);
 debug('$_GETの値:'.print_r($_GET,true));
 validGetParam($currentPageNum);
 if(isset($_GET['pref']) && $_GET['pref'] !== ''){
+  debug('あ');
   validGetParam($_GET['pref']);
   validSelect($_GET['pref'],'pref',$dbPrefCategory['result']);
 }
-if(isset($_GET['genre']) && $_GET['genre'] !== '0'){
+if(isset($_GET['genre']) && $_GET['genre'] !== '0' && $_GET['genre'] !== ''){
+  debug('い');
   validGetParam($_GET['genre']);
   $validList[] = 0;
   validSelect($_GET['genre'],'genre',$validList);
 }
-if(isset($_GET['price']) && $_GET['price'] !== '0'){
+if(isset($_GET['price']) && $_GET['price'] !== '0' && $_GET['price'] !== ''){
+  debug('う');
   validGetParam($_GET['price']);
   $validList[] = 0;
   validSelect($_GET['price'],'price',$validList);
@@ -168,7 +169,7 @@ require('head.php');
       <?php 
         foreach($dbHostData['rst'] as $host ):
         ?>
-      <a href="hostDetails.php?h_id=<?php echo $host['id']; ?>" class="host-like-wrap">
+      <a href="hostDetails.php<?php echo (!empty($_GET)) ? appendGetParam() . '&h_id=' . $host['user_id'] : '?h_id=' . $host['user_id']; ?>" class="host-like-wrap">
         <div class="like-img">
           <img src="uploads/<?php echo sanitize($host['pic1']); ?>" alt="写真">
         </div>
@@ -225,8 +226,19 @@ require('head.php');
             for($i = $minPageNum;$i <= $maxPageNum;$i++):
           ?>
           <li class="<?php if($currentPageNum == $i) echo 'active'; ?>">
-            <?php if(isset($prefCategory) || !empty($genreCategory) || !empty($priceCategory)){ ?>
-              <a href="index.php?p=<?php echo $i . '&pref=' . $prefCategory . '&genre=' . $genreCategory . '&price=' . $priceCategory; ?>"><?php echo $i; ?></a>
+           <?php 
+           $prefOk = $prefCategory !== '';
+           $genreOk = $genreCategory !== '' && $genreCategory !== '0';
+           $priceOk = $priceCategory !== '' && $priceCategory !== '0';
+           $genrePriceOk = $genreOk && $priceOk;
+           ?>
+           <?php if($prefOk || $genrePriceOk){ ?>
+              <a href="index.php?p=<?php echo $i 
+                . ($prefOk ? '&pref=' . $prefCategory : '' ) 
+                . ($genrePriceOk ? '&genre=' . $genreCategory : '') 
+                . ($genrePriceOk ? '&price=' . $priceCategory : '');?>">
+                <?php echo $i; ?>
+              </a>
             <?php }else{ ?>  
               <a href="index.php?p=<?php echo $i; ?>"><?php echo $i; ?></a>
             <?php } ?>
