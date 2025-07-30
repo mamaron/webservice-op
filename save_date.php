@@ -11,7 +11,7 @@ debugLogStart();
 selectして、情報があったら、delete,なかったら、insertだな。
 */
 if(isset($_POST['date']) && isset($_POST['id'])){
-  debug('dataのdateとidがあります。');
+  debug('[save_date.php]dataのdateとidがあります。');
   $date = $_POST['date'];
   $id = $_POST['id'];
   //例外処理
