@@ -82,6 +82,7 @@ define('SUC05','愛犬情報登録成功しました。！');
 define('SUC06','愛犬情報編集成功しました。！');
 define('SUC07','ホスト情報編集しました。！');
 define('SUC08','ホスト情報登録成功しました。！');
+define('SUC09','事前面談画面でホストさんとやりとりしましょう！');
 //===================================================
 //変数
 //===================================================
@@ -164,9 +165,9 @@ function validMinLen($str,$key,$min = 6){
   }
 }
 //文字列が一致してるか
-function validMathMatch($str1,$str2,$key){
+function validMathMatch($str1,$key){
   global $err_msg;
-  if(mb_strlen($str1) !== $str2){
+  if(!preg_match('/^\d{7}$/',$str1)){
     $err_msg[$key] = MSG17;
   }
 }
@@ -186,10 +187,9 @@ function validCheckPass($pass,$db_pass,$key){
   }
 }
 //セレクトボックス(ホスト用)
-function validSelect($str,$key){
+function validSelect($str,$key,$val){
   global $err_msg;
-  $validOptions = [1,2,3];
-  if(!in_array($str,$validOptions,true)){
+  if(in_array($str,$val,true)){
     $err_msg[$key] = MSG16;
   }
 }
@@ -200,6 +200,32 @@ function validMisMatch($str,$key,$match = 0){
     $err_msg[$key] = MSG16;
   }
 }
+//GETパラメータの改ざんチェック
+//========================================
+function validGetParam($param){
+  if(!is_string($param) || !ctype_digit($param)){
+    http_response_code(400);
+    debug('GETパラメータ改ざんされてます。処理を止めます。トップページに遷移します。');
+    header("Location:index.php");
+    exit;
+  }
+}
+//GETパラメータ付与 ?p=1&p_id=2
+//$del_key:取り除きたいgetパラメータのキー
+function appendGetParam($del_key = array()){
+  if(!empty($_GET)){
+    $str = '?';
+
+    foreach($_GET as $key => $val){
+      if(!in_array($key,$del_key,true)){
+        $str .= $key .'='.$val.'&';
+      }
+    }
+    $str = mb_substr($str,0,-1,'UTF-8');
+    return $str;
+  }
+}
+
 //===================================================
 //ユーザーデータ取得
 //===================================================
@@ -283,6 +309,131 @@ function getHostData($u_id){
     return false;
   }
 }
+
+//===================================================
+//トップページ用のhostデータ取得
+//===================================================
+//全ホストデータとデータ数取得の両立は無理だ。
+function getTopHostData($limit,$offset,$pref,$genre,$price){
+ debug('TOPページ用のホスト全情報取得します。');
+ //例外処理
+ try{
+  //db
+  $dbh = dbConnect();
+  //wehre句自動生成
+  $where = [];
+  $param = [];
+  //都道府県
+  if(isset($pref) && $pref !== ''){
+    $where[] = 'prefectures_id = :pref';
+    $param[':pref'] = $pref;
+  }
+
+  debug('$whereの値'.print_r($where,true));
+  debug('$whereのデータ型'.gettype($where));
+
+  //SQL 全データ数取得デフォルト
+  $sql = 'SELECT count(*) FROM host WHERE delete_flg = 0';
+  //追加用
+  if(!empty($where)){
+    $sql .= ' AND ' . implode(' AND ',$where);
+  }
+  $stmt = $dbh->prepare($sql);
+  if(!empty($where)){
+    $stmt->execute($param);
+  }else{
+    $stmt->execute();
+  }
+  $total = $stmt->fetchColumn();
+  $total_page = ceil($total/$limit);
+  debug('中身:'.$total);
+
+  //データ表示用 
+  $sql1 = 'SELECT id, user_id, hostname, prefecture, price1, price2, pic1 FROM host WHERE delete_flg = 0';
+  //追加用
+  if(!empty($where)){
+    $sql1 .= ' AND ' . implode(' AND ',$where);
+  }
+  //追加用ソート検索
+  //ジャンル(1=お散歩、2=お泊まり)が1以上かつpriceが１以上
+  if(!empty($genre) && !empty($price)){
+    if($genre == 1){//お散歩price1
+      
+      if($price == 1){//金額が高い順
+        $sql1 .= ' ORDER BY price1 DESC';
+      }elseif($price == 2){
+        $sql1 .= ' ORDER BY price1 ASC';
+      }
+    }elseif($genre == 2){//お泊まりprice2
+      
+      if($price == 1){//金額が高い順
+        $sql1 .= ' ORDER BY price2 DESC';
+      }elseif($price == 2){
+        $sql1 .= ' ORDER BY price2 ASC';
+      }
+    }
+  }
+  $sql1 .= ' LIMIT :limit OFFSET :offset';
+  //$paramに:limit,:offsetを入れる
+  $param[':limit'] = $limit;
+  $param[':offset'] = $offset;
+  debug('＄prefの中身:'.$pref);
+  debug('SQL中身:'.$sql1);
+  debug('$paramの中身:'.print_r($param,true));
+  $stmt1 = $dbh->prepare($sql1);
+  //LIMIT 何個取るか、OFFSET 何番目から
+  foreach($param as $key => $val){
+    $paramType = (is_int($val)) ? PDO::PARAM_INT : PDO::PARAM_STR;
+    $stmt1->bindValue($key,$val,$paramType);
+  }
+  $stmt1->execute();
+  $rst = $stmt1->fetchAll();
+  if(count($rst) > 0){
+    debug('全データ取得成功');
+    return [
+      'total' => $total,
+      'total_page' => $total_page,
+      'rst' => $rst
+    ];
+  }
+}catch(Exception $e){
+  debug('エラー発生:'.$e->getMessage());
+  return false;
+}
+}
+
+//===================================================
+//都道府県のカテゴリー取得
+//===================================================
+function getPrefData(){
+  debug('カテゴリー情報取得します。');
+  //hostとprefsマスターテーブルを inner join
+  //取得したいのは名前。
+  //例外処理
+  try{
+    //db
+    $dbh = dbConnect();
+    //SQL
+    $sql = 'SELECT DISTINCT p.id,p.name FROM prefectures p INNER JOIN host h WHERE h.prefectures_id = p.id';
+    //data
+    $data = array();
+    $stmt = queryPost($dbh,$sql,$data);
+    $result = $stmt->fetchAll();
+    $total = count($result);
+    if(empty($result)){
+      return false;
+    }else{
+      return [
+        'result' => $result,
+        'total' => $total
+      ];
+    }
+  }catch(Exception $e){
+    debug('エラー発生：'.$e->getMessage());
+    return false;
+  }
+}
+
 //===================================================
 //ホスト可能日
 //===================================================
@@ -304,6 +455,37 @@ function getHostAvailable($u_id){
     }
   }catch(Exception $e){
     debug('エラー発生：'.$e->getMessage());
+  }
+}
+//===================================================
+//可能日選択
+//===================================================
+function getDaySelected($user,$host){
+  debug('希望日を飼い主が選択したか確認します。');
+  //例外処理
+  try{
+    //DB接続
+    $dbh = dbConnect();
+    //SQL
+    $sql = 'SELECT count(*) FROM availability WHERE host_id = :h_id AND user_id = :u_id';
+    //data
+    $data = array(
+      ':h_id' => $host,
+      'u_id' => $user
+    );
+    //クエリ実行
+    $stmt = queryPost($dbh,$sql,$data);
+    $result = $stmt->fetchColumn();
+    if($result > 0){
+      debug('希望日が選択されました。');
+      return true;
+    }else{
+      debug('希望日が選択されませんでした。');
+      return false;
+    }
+  }catch(Exception $e){
+    debug('エラー発生:'.$e->getMessage());
+    return false;
   }
 }
 
